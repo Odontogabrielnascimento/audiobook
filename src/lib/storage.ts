@@ -123,3 +123,40 @@ export async function serveLocal(key: string, rangeHeader: string | null, cacheC
   const stream = Readable.toWeb(createReadStream(file)) as ReadableStream;
   return new Response(stream, { status: 200, headers: { ...headers, "Content-Length": String(size) } });
 }
+
+// Testa as credenciais gravando, lendo e apagando um arquivo pequeno
+export async function checkStorage() {
+  const info = {
+    driver,
+    endpoint: process.env.S3_ENDPOINT || null,
+    region: process.env.S3_REGION || null,
+    bucket: process.env.S3_BUCKET || null,
+    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+    accessKeyIdLength: (process.env.S3_ACCESS_KEY_ID || "").length,
+    secretLength: (process.env.S3_SECRET_ACCESS_KEY || "").length,
+  };
+  if (driver !== "s3") return { ok: true, ...info, note: "Armazenamento local" };
+  const key = "covers/teste-diagnostico.txt";
+  const steps: Record<string, string> = {};
+  try {
+    await s3Client().send(new PutObjectCommand({ Bucket: bucket(), Key: key, Body: "ok", ContentType: "text/plain" }));
+    steps.envio_pelo_servidor = "ok";
+  } catch (e) {
+    steps.envio_pelo_servidor = errText(e);
+    return { ok: false, ...info, steps };
+  }
+  try {
+    const url = await uploadUrl(key, "text/plain");
+    const res = await fetch(url, { method: "PUT", body: "ok", headers: { "Content-Type": "text/plain" } });
+    steps.envio_por_link = res.ok ? "ok" : `${res.status} ${(await res.text()).slice(0, 300)}`;
+  } catch (e) {
+    steps.envio_por_link = errText(e);
+  }
+  await deleteFile(key);
+  return { ok: Object.values(steps).every((v) => v === "ok"), ...info, steps };
+}
+
+function errText(e: unknown) {
+  const err = e as { name?: string; message?: string; $metadata?: { httpStatusCode?: number } };
+  return `${err.$metadata?.httpStatusCode ?? ""} ${err.name ?? ""}: ${err.message ?? String(e)}`.trim();
+}

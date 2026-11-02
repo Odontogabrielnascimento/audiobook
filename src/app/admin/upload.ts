@@ -15,7 +15,14 @@ export async function uploadFile(kind: "audio" | "cover", file: File, onProgress
     xhr.open("PUT", url);
     if (file.type) xhr.setRequestHeader("Content-Type", file.type);
     xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(Math.round((e.loaded / e.total) * 100));
-    xhr.onload = () => (xhr.status < 300 ? resolve() : reject(new Error(`Falha no envio (${xhr.status})`)));
+    xhr.onload = () => {
+      if (xhr.status < 300) return resolve();
+      // Servicos S3 explicam a recusa em XML: <Code> e <Message>
+      const body = xhr.responseText || "";
+      const code = body.match(/<Code>([^<]*)<\/Code>/)?.[1];
+      const msg = body.match(/<Message>([^<]*)<\/Message>/)?.[1] ?? body.slice(0, 200);
+      reject(new Error(`Falha no envio (${xhr.status})${code ? ` ${code}` : ""}${msg ? `: ${msg}` : ""}`));
+    };
     xhr.onerror = () => reject(new Error("Falha de rede no envio"));
     xhr.send(file);
   });
