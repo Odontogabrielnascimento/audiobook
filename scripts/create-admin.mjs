@@ -8,7 +8,10 @@ if (!email || !name || !password) {
   console.error('Uso: npm run admin:create -- email@exemplo.com "Seu Nome" senha');
   process.exit(1);
 }
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+const client = new pg.Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined,
+});
 await client.connect();
 const hash = await bcrypt.hash(password, 12);
 await client.query(

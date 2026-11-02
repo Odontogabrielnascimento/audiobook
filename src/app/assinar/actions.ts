@@ -14,6 +14,9 @@ export async function startCheckout(_: CheckoutState, form: FormData): Promise<C
   const cpf = onlyDigits(String(form.get("cpf") || ""));
   const method = form.get("method") === "CREDIT_CARD" ? "CREDIT_CARD" : "PIX";
   if (!isValidCPF(cpf)) return { error: "CPF inválido. Confira os números." };
+  if (asaas.isMock && !asaas.simulationAllowed) {
+    return { error: "Os pagamentos ainda não estão disponíveis. Tente novamente em breve." };
+  }
 
   let invoiceUrl: string | null = null;
   try {

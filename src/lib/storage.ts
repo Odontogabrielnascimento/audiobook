@@ -19,6 +19,8 @@ function s3Client() {
   s3 ??= new S3Client({
     region: process.env.S3_REGION || "auto",
     endpoint: process.env.S3_ENDPOINT || undefined,
+    // Supabase Storage e MinIO exigem path style; R2 e AWS funcionam com ou sem
+    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY_ID!,
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,

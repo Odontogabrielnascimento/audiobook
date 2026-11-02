@@ -58,41 +58,50 @@ Sem `ASAAS_API_KEY`, o app roda em **modo simulado**: a fatura é uma página lo
 
 ## Publicar (produção)
 
-Uma combinação que funciona bem:
+Caminho mais simples: **Supabase** para banco e áudios, **Vercel** para o app. Os dois têm plano gratuito para começar.
 
-| Parte | Serviço sugerido | Por quê |
-|---|---|---|
-| App | [Vercel](https://vercel.com) | Feito para Next.js e tem plano gratuito para começar |
-| Banco | [Neon](https://neon.tech) ou [Supabase](https://supabase.com) (só o Postgres) | Postgres gerenciado |
-| Áudios e capas | [Cloudflare R2](https://developers.cloudflare.com/r2/) | Compatível com S3 e sem cobrança por tráfego de saída, o que importa para áudio |
+### 1. Supabase (banco e arquivos)
+1. Crie um projeto em [supabase.com](https://supabase.com) e anote a senha do banco.
+2. **Banco:** clique em *Connect* e copie a connection string do **Transaction pooler** (porta 6543). Troque `[YOUR-PASSWORD]` pela senha. Esse valor vai em `DATABASE_URL`, junto com `DATABASE_SSL=true`.
+3. **Arquivos:** em *Storage*, crie um bucket **privado** chamado `audiobook`.
+4. Em *Storage > Settings > S3 Connection*, ative a conexão S3 e crie uma *access key*. Anote:
+   - `S3_ENDPOINT` = o endpoint mostrado (termina em `/storage/v1/s3`)
+   - `S3_REGION` = a região mostrada
+   - `S3_ACCESS_KEY_ID` e `S3_SECRET_ACCESS_KEY` = a chave criada
+   - `S3_BUCKET=audiobook`, `S3_FORCE_PATH_STYLE=true`, `STORAGE_DRIVER=s3`
 
-### 1. Banco
-Crie o banco e rode `npm run db:migrate` apontando `DATABASE_URL` para ele. Se o provedor exigir SSL, defina `DATABASE_SSL=true`.
+> No plano gratuito do Supabase, cada arquivo pode ter no máximo 50 MB. Exporte os capítulos em MP3 mono de 64 kbps, que dá cerca de 28 MB por hora. Projetos gratuitos também são pausados depois de um período sem uso. Para operar com assinantes, use o plano pago.
 
-### 2. Armazenamento (R2)
-1. Crie um bucket e um token de API com permissão de leitura e escrita nele.
-2. Configure o CORS do bucket para permitir o envio direto pelo navegador (troque o domínio):
-   ```json
-   [{ "AllowedOrigins": ["https://SEU-DOMINIO"], "AllowedMethods": ["GET", "PUT"], "AllowedHeaders": ["*"], "MaxAgeSeconds": 3600 }]
-   ```
-3. Variáveis: `STORAGE_DRIVER=s3`, `S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com`, `S3_REGION=auto`, `S3_BUCKET`, `S3_ACCESS_KEY_ID` e `S3_SECRET_ACCESS_KEY`.
+### 2. Vercel (app)
+1. Entre em [vercel.com](https://vercel.com) com sua conta do GitHub e importe o repositório `audiobook`.
+2. Antes de clicar em *Deploy*, abra *Environment Variables* e cadastre:
+   - as variáveis do Supabase acima
+   - `SESSION_SECRET`: uma frase aleatória longa, com no mínimo 32 caracteres
+   - `ADMIN_EMAILS`: o seu e-mail
+   - `ASAAS_WEBHOOK_TOKEN`: qualquer frase longa
+   - `PLAN_PRICE=19.90` e `NEXT_PUBLIC_APP_NAME` com o nome do app
+3. Clique em *Deploy*. As tabelas são criadas automaticamente durante a publicação.
+4. Copie o endereço gerado (`https://....vercel.app`), coloque em `APP_URL` e publique de novo em *Deployments > Redeploy*.
+5. Abra o endereço, crie sua conta em **Cadastro** com o e-mail de `ADMIN_EMAILS`, e o menu **Admin** aparece.
 
-> O modo `local` (pasta `./storage`) serve só para desenvolvimento. Na Vercel os arquivos locais se perdem.
+Sem `ASAAS_API_KEY`, a tela de assinatura em produção mostra "Pagamentos ainda não configurados". Para testar o fluxo completo antes de configurar o Asaas, cadastre `ALLOW_SIMULATED_PAYMENTS=true`: isso ativa o botão "Simular pagamento". **Remova essa variável antes de divulgar o endereço**, porque com ela qualquer pessoa libera o acesso sem pagar.
 
-### 3. Asaas
+### 3. Asaas (cobrança real)
 1. Crie a conta no [sandbox](https://sandbox.asaas.com) primeiro e gere a chave de API.
-2. Variáveis: `ASAAS_API_URL=https://api-sandbox.asaas.com/v3` e `ASAAS_API_KEY`.
-3. Em *Integrações > Webhooks*, cadastre:
+2. Na Vercel: `ASAAS_API_URL=https://api-sandbox.asaas.com/v3` e `ASAAS_API_KEY`.
+3. No Asaas, em *Integrações > Webhooks*, cadastre:
    - URL: `https://SEU-DOMINIO/api/webhooks/asaas`
    - Token de autenticação: o mesmo valor de `ASAAS_WEBHOOK_TOKEN`
    - Eventos: cobranças (`PAYMENT_*`) e assinaturas (`SUBSCRIPTION_*`)
 4. Faça um ciclo completo de teste. Depois troque para a conta de produção (`https://api.asaas.com/v3`) e a chave real.
 
-### 4. Demais variáveis
-`APP_URL`, `NEXT_PUBLIC_APP_NAME`, `SESSION_SECRET` (gere com `openssl rand -base64 32`), `PLAN_PRICE`, `PLAN_DESCRIPTION` e `GRACE_DAYS`.
+### Alternativa para os áudios: Cloudflare R2
+Quando o volume crescer, o R2 é mais barato para áudio porque não cobra tráfego de saída. Use `S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com`, `S3_REGION=auto` e `S3_FORCE_PATH_STYLE=false`, e configure o CORS do bucket:
+```json
+[{ "AllowedOrigins": ["https://SEU-DOMINIO"], "AllowedMethods": ["GET", "PUT"], "AllowedHeaders": ["*"], "MaxAgeSeconds": 3600 }]
+```
 
-### 5. Administrador
-Com o banco de produção no `DATABASE_URL`: `npm run admin:create -- seu@email.com "Seu Nome" senha`.
+> O modo `local` (pasta `./storage`) serve só para desenvolvimento. Na Vercel os arquivos locais se perdem.
 
 ## Antes de abrir ao público
 

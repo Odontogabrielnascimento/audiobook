@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { isMock } from "@/lib/asaas";
+import { simulationAllowed } from "@/lib/asaas";
 import { processAsaasEvent } from "@/lib/billing";
 import { formatBRL, formatDate } from "@/lib/config";
 import { queryOne } from "@/lib/db";
@@ -17,14 +17,14 @@ async function getPay(id: string) {
 }
 
 export default async function FakeInvoice({ params }: { params: Promise<{ id: string }> }) {
-  if (!isMock) notFound();
+  if (!simulationAllowed) notFound();
   const { id } = await params;
   const pay = await getPay(id);
   if (!pay) notFound();
 
   async function simulate(formData: FormData) {
     "use server";
-    if (!isMock) return;
+    if (!simulationAllowed) return;
     const p = await getPay(id);
     if (!p) return;
     const event = String(formData.get("event"));

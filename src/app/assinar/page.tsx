@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser, hasAccess } from "@/lib/auth";
-import { isMock } from "@/lib/asaas";
+import { isMock, simulationAllowed } from "@/lib/asaas";
 import { config, formatBRL } from "@/lib/config";
 import { CheckoutForm } from "./CheckoutForm";
 
@@ -23,9 +23,14 @@ export default async function Assinar() {
       <p className="mt-2 text-muted">
         {formatBRL(config.planPrice)} por mês, acesso a todo o catálogo. Cancele quando quiser em Minha conta.
       </p>
-      {isMock && (
+      {simulationAllowed && (
         <p className="mt-4 rounded-xl border border-warn p-3 text-sm text-warn">
           Modo simulado: nenhuma cobrança real será feita (ASAAS_API_KEY não configurada).
+        </p>
+      )}
+      {isMock && !simulationAllowed && (
+        <p className="mt-4 rounded-xl border border-warn p-3 text-sm text-warn">
+          Pagamentos ainda não configurados.
         </p>
       )}
       <div className="mt-6">

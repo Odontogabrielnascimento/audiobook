@@ -8,6 +8,11 @@ import { query } from "./db";
 
 export const isMock = !process.env.ASAAS_API_KEY;
 
+// Em producao, a simulacao so funciona se for ligada de proposito (para testes).
+// Sem isso, qualquer visitante conseguiria liberar o acesso sem pagar.
+export const simulationAllowed =
+  isMock && (process.env.NODE_ENV !== "production" || process.env.ALLOW_SIMULATED_PAYMENTS === "true");
+
 const API_URL = (process.env.ASAAS_API_URL || "https://api-sandbox.asaas.com/v3").replace(/\/$/, "");
 
 export type AsaasPayment = {

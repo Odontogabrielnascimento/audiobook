@@ -21,13 +21,21 @@ export type Subscription = {
   access_until: Date | null;
 };
 
+// E-mails listados em ADMIN_EMAILS (separados por virgula) sao sempre administradores
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
 export const getCurrentUser = cache(async (): Promise<User | null> => {
   const id = await getSessionUserId();
   if (!id) return null;
-  return queryOne<User>(
+  const user = await queryOne<User>(
     "select id, name, email, cpf, role, asaas_customer_id from users where id = $1",
     [id],
   );
+  if (user && ADMIN_EMAILS.includes(user.email)) user.role = "admin";
+  return user;
 });
 
 export async function getSubscription(userId: string) {
