@@ -21,6 +21,10 @@ function s3Client() {
     endpoint: process.env.S3_ENDPOINT || undefined,
     // Supabase Storage e MinIO exigem path style; R2 e AWS funcionam com ou sem
     forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+    // O SDK incluiria por padrao um checksum do corpo vazio nos links de envio,
+    // que Supabase, R2 e outros servicos compativeis rejeitam (403).
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
     credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY_ID!,
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
