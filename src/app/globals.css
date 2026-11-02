@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f6f2ea;
+  --surface: #fffdf8;
+  --ink: #1d1914;
+  --muted: #6b6257;
+  --line: #e2d9cb;
+  --accent: #1f5c58;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcebe8;
+  --warn: #9a4b16;
+  --danger: #a12b2b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15130f;
+    --surface: #1e1b16;
+    --ink: #f0ebe2;
+    --muted: #a59b8d;
+    --line: #34302a;
+    --accent: #6bb5ad;
+    --accent-ink: #0d1514;
+    --accent-soft: #1e3532;
+    --warn: #e3a066;
+    --danger: #ec8a8a;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  color-scheme: light dark;
+}
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-accent-ink hover:brightness-110;
+}
+@utility btn-ghost {
+  @apply btn border border-line hover:bg-surface;
+}
+@utility btn-danger {
+  @apply btn border border-danger text-danger hover:bg-danger hover:text-paper;
+}
+@utility input {
+  @apply w-full rounded-xl border border-line bg-surface px-4 py-3 text-base outline-none focus:border-accent;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium;
+}
+@utility card {
+  @apply rounded-2xl border border-line bg-surface;
+}
+@utility container-page {
+  @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
