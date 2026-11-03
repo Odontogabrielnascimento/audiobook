@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Audiobooks por assinatura",
     start_url: "/biblioteca",
     display: "standalone",
-    background_color: "#f6f2ea",
-    theme_color: "#1f5c58",
+    background_color: "#090d18",
+    theme_color: "#090d18",
     lang: "pt-BR",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

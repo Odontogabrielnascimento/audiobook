@@ -10,6 +10,7 @@ export type Book = {
   description: string;
   cover_key: string | null;
   published: boolean;
+  featured: boolean;
   series_id: string | null;
   series_position: number | null;
   series_name: string | null;
@@ -38,7 +39,7 @@ export function coverUrl(b: { id: string; cover_key: string | null }) {
 
 // Consulta base de livros: duracao, faixas, serie e media de avaliacoes
 const BOOK_SELECT = `
-  select b.id, b.slug, b.title, b.author, b.narrator, b.description, b.cover_key, b.published,
+  select b.id, b.slug, b.title, b.author, b.narrator, b.description, b.cover_key, b.published, b.featured,
          b.series_id, b.series_position, s.name as series_name, s.slug as series_slug,
          coalesce(c.total_seconds, 0)::int as total_seconds,
          coalesce(c.chapter_count, 0)::int as chapter_count,
@@ -64,6 +65,19 @@ export function listBooks({ includeUnpublished = false, limit = 500 } = {}) {
   return query<Book>(
     `${BOOK_SELECT} ${includeUnpublished ? "" : "where b.published"}
      order by b.created_at desc limit $1`,
+    [limit],
+  );
+}
+
+// Destaques do carrossel: marcados no Admin; sem marcacao, os mais recentes com capa
+export async function featuredBooks(limit = 6) {
+  const marked = await query<Book>(
+    `${BOOK_SELECT} where b.published and b.featured order by b.created_at desc limit $1`,
+    [limit],
+  );
+  if (marked.length) return marked;
+  return query<Book>(
+    `${BOOK_SELECT} where b.published and b.cover_key is not null order by b.created_at desc limit $1`,
     [limit],
   );
 }
@@ -128,7 +142,7 @@ export function listChapters(bookId: string) {
 }
 
 export function continueListening(userId: string, limit = 12) {
-  return query<Book & { chapter_title: string; position_seconds: number }>(
+  return query<Book & { chapter_title: string; position_seconds: number; elapsed_seconds: number }>(
     `${BOOK_SELECT}
       join progress p on p.book_id = b.id and p.user_id = $1
       join chapters ch on ch.id = p.chapter_id
@@ -136,7 +150,10 @@ export function continueListening(userId: string, limit = 12) {
      where b.published and (sh.status is null or sh.status <> 'finished')
      order by p.updated_at desc limit $2`.replace(
       "select b.id,",
-      "select ch.title as chapter_title, p.position_seconds, b.id,",
+      `select ch.title as chapter_title, p.position_seconds,
+              (p.position_seconds + coalesce((select sum(duration_seconds) from chapters x
+                 where x.book_id = b.id and x.position < ch.position), 0))::int as elapsed_seconds,
+              b.id,`,
     ),
     [userId, limit],
   );

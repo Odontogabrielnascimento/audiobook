@@ -25,6 +25,7 @@ export default async function Admin() {
         <h1 className="text-3xl font-semibold">Painel</h1>
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/categorias" className="btn-ghost">Categorias</Link>
+          <Link href="/admin/aparencia" className="btn-ghost">Aparência</Link>
           <Link href="/admin/diagnostico" className="btn-ghost">Diagnóstico</Link>
           <Link href="/admin/livros/novo" className="btn-primary">Novo livro</Link>
         </div>

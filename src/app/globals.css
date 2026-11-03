@@ -1,88 +1,102 @@
 @import "tailwindcss";
 
+/* Tema unico escuro: noite azul profunda com dourado */
 :root {
-  --paper: #f6f2ea;
-  --surface: #fffdf8;
-  --ink: #1d1914;
-  --muted: #6b6257;
-  --line: #e2d9cb;
-  --accent: #1f5c58;
-  --accent-ink: #ffffff;
-  --accent-soft: #dcebe8;
-  --warn: #9a4b16;
-  --danger: #a12b2b;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #15130f;
-    --surface: #1e1b16;
-    --ink: #f0ebe2;
-    --muted: #a59b8d;
-    --line: #34302a;
-    --accent: #6bb5ad;
-    --accent-ink: #0d1514;
-    --accent-soft: #1e3532;
-    --warn: #e3a066;
-    --danger: #ec8a8a;
-  }
+  --paper: #090d18;
+  --surface: #111729;
+  --surface-2: #182036;
+  --ink: #f4efe4;
+  --muted: #98a1b6;
+  --line: #222b42;
+  --accent: #e8b84a;
+  --accent-2: #f6d78c;
+  --accent-ink: #1b1405;
+  --accent-soft: #2a2412;
+  --warn: #f0b54a;
+  --danger: #f28b82;
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   font-family: var(--font-serif);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:opacity-50;
 }
 @utility btn-primary {
-  @apply btn bg-accent text-accent-ink hover:brightness-110;
+  @apply btn text-accent-ink shadow-[0_8px_24px_-8px_rgba(232,184,74,0.6)] hover:brightness-110;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
 }
 @utility btn-ghost {
-  @apply btn border border-line hover:bg-surface;
+  @apply btn border border-line bg-surface/60 backdrop-blur hover:border-accent/60 hover:bg-surface-2;
 }
 @utility btn-danger {
-  @apply btn border border-danger text-danger hover:bg-danger hover:text-paper;
+  @apply btn border border-danger/60 text-danger hover:bg-danger hover:text-paper;
 }
 @utility input {
-  @apply w-full rounded-xl border border-line bg-surface px-4 py-3 text-base outline-none focus:border-accent;
+  @apply w-full rounded-2xl border border-line bg-surface px-4 py-3 text-base text-ink outline-none transition placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/20;
 }
 @utility label {
-  @apply mb-1.5 block text-sm font-medium;
+  @apply mb-1.5 block text-sm font-medium text-ink/90;
 }
 @utility card {
-  @apply rounded-2xl border border-line bg-surface;
+  @apply rounded-3xl border border-line bg-surface;
 }
 @utility container-page {
-  @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 input[type="range"] {
   accent-color: var(--accent);
+}
+select option {
+  background: var(--surface);
+}
+
+/* Brilho dourado de fundo usado nos destaques */
+.glow {
+  background:
+    radial-gradient(60% 80% at 75% 0%, rgba(232, 184, 74, 0.28), transparent 60%),
+    radial-gradient(50% 60% at 0% 100%, rgba(72, 98, 180, 0.35), transparent 60%),
+    linear-gradient(180deg, #0d1426, var(--paper));
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
 }

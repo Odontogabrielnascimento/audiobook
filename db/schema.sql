@@ -121,3 +121,12 @@ create table if not exists ratings (
   primary key (user_id, book_id)
 );
 create index if not exists ratings_book_idx on ratings (book_id);
+
+-- ===== Visual =====
+alter table books add column if not exists featured boolean not null default false;
+
+create table if not exists site_settings (
+  key        text primary key,
+  value      text not null,
+  updated_at timestamptz not null default now()
+);

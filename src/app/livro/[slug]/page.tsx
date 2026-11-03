@@ -39,11 +39,21 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
   const otherVolumes = seriesBooks.filter((b) => b.id !== book.id);
 
   return (
-    <div className="py-8">
-      <div className="container-page">
-        <div className="grid gap-8 md:grid-cols-[260px_1fr]">
-          <div className="mx-auto w-full max-w-[260px]">
-            <Cover book={book} />
+    <div className="pb-8">
+      {/* Fundo com a capa desfocada */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] overflow-hidden" aria-hidden>
+        {coverUrl(book) ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={coverUrl(book)!} alt="" className="h-full w-full scale-125 object-cover opacity-50 blur-3xl" />
+        ) : (
+          <div className="glow h-full w-full" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-paper/30 via-paper/70 to-paper" />
+      </div>
+      <div className="container-page pt-8">
+        <div className="grid gap-8 md:grid-cols-[300px_1fr] md:items-end">
+          <div className="mx-auto w-full max-w-[280px] md:max-w-none">
+            <Cover book={book} className="!rounded-3xl shadow-2xl shadow-black/60" />
           </div>
           <div>
             {!book.published && <p className="mb-2 text-sm font-semibold text-warn">Rascunho (visível só para administradores)</p>}
@@ -52,8 +62,8 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                 {book.series_name}{book.series_position ? ` · Volume ${book.series_position}` : ""}
               </Link>
             )}
-            <h1 className="text-3xl font-semibold leading-tight">{book.title}</h1>
-            <p className="mt-1 text-muted">
+            <h1 className="mt-1 text-4xl font-semibold leading-[1.05] sm:text-5xl">{book.title}</h1>
+            <p className="mt-2 text-lg text-ink/80">
               {book.author}
               {book.narrator && <> · Narração: {book.narrator}</>}
             </p>
@@ -64,7 +74,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
             {categories.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {categories.map((c) => (
-                  <Link key={c.id} href={`/categoria/${c.slug}`} className="rounded-full border border-line px-3 py-1 text-xs hover:border-accent">
+                  <Link key={c.id} href={`/categoria/${c.slug}`} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs backdrop-blur hover:border-accent">
                     {c.name}
                   </Link>
                 ))}

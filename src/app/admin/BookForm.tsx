@@ -11,6 +11,7 @@ type Book = {
   description: string;
   series_id?: string | null;
   series_position?: number | null;
+  featured?: boolean;
 };
 type Option = { id: string; name: string };
 
@@ -83,6 +84,14 @@ export function BookForm({ action, book, submitLabel, categories, series, select
           </div>
         )}
       </div>
+
+      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line p-3 has-[:checked]:border-accent">
+        <input type="checkbox" name="featured" defaultChecked={book?.featured} className="h-4 w-4 accent-[var(--accent)]" />
+        <span>
+          <span className="block text-sm font-semibold">Destaque na página inicial</span>
+          <span className="block text-xs text-muted">Aparece no carrossel do topo. Sem nenhum marcado, entram os mais recentes com capa.</span>
+        </span>
+      </label>
 
       {state?.error && <p className="text-sm text-danger">{state.error}</p>}
       {state?.ok && <p className="text-sm text-accent">Salvo.</p>}

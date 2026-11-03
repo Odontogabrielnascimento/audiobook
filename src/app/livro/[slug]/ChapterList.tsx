@@ -31,12 +31,12 @@ export function ChapterList({ book, chapters, gate, progress }: Props) {
 
   return (
     <section className="mt-8">
-      <div className="mb-6">{cta}</div>
-      <h2 className="mb-3 text-xl font-semibold">Faixas</h2>
+      <div className="mb-8 [&>*]:!px-7 [&>*]:!py-3.5 [&>*]:!text-base">{cta}</div>
+      <h2 className="mb-4 text-2xl font-semibold">Faixas</h2>
       {chapters.length === 0 ? (
         <p className="text-muted">Nenhuma faixa enviada ainda.</p>
       ) : (
-        <ol className="card divide-y divide-line">
+        <ol className="card divide-y divide-line overflow-hidden">
           {chapters.map((c, i) => {
             const active = i === activeIndex;
             return (
@@ -44,7 +44,7 @@ export function ChapterList({ book, chapters, gate, progress }: Props) {
                 <button
                   disabled={!!gate}
                   onClick={() => (active ? p.toggle() : p.play(book, chapters, i, i === resumeIndex ? progress!.position : 0))}
-                  className="flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-paper disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  className="flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-surface-2 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   <span className={`w-6 text-right text-sm tabular-nums ${active ? "text-accent" : "text-muted"}`}>
                     {active && p.playing ? "▶" : i + 1}

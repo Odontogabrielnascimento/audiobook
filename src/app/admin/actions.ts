@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getBookById, listChapters, slugify } from "@/lib/catalog";
 import { pool, query, queryOne } from "@/lib/db";
 import { deleteFile, isSafeKey } from "@/lib/storage";
+import { getSetting, setSetting } from "@/lib/settings";
 
 export type BookFormState = { error?: string; ok?: boolean } | undefined;
 
@@ -53,6 +54,8 @@ async function saveTaxonomy(bookId: string, form: FormData) {
   } else if (!UUID.test(seriesId)) {
     seriesId = null;
   }
+  await query("update books set featured = $2 where id = $1", [bookId, form.get("featured") === "on"]);
+
   const pos = Number(form.get("series_position"));
   await query("update books set series_id = $2, series_position = $3 where id = $1", [
     bookId,
@@ -211,4 +214,15 @@ export async function deleteCategory(id: string) {
   if (!UUID.test(id)) return;
   await query("delete from categories where id = $1", [id]);
   revalidatePath("/admin/categorias");
+}
+
+// ---- Aparencia ----
+
+export async function setHeroImage(key: string | null) {
+  await requireAdmin();
+  if (key !== null && (!isSafeKey(key) || !key.startsWith("covers/"))) throw new Error("Chave inválida");
+  const old = await getSetting("hero_key");
+  await setSetting("hero_key", key);
+  if (old && old !== key) await deleteFile(old);
+  revalidatePath("/", "layout");
 }
