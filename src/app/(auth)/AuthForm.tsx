@@ -32,7 +32,19 @@ export function AuthForm({ mode, next }: { mode: "entrar" | "cadastro"; next?: s
           required
         />
         {mode === "cadastro" && <p className="mt-1 text-xs text-muted">Mínimo de 8 caracteres.</p>}
+        {mode === "entrar" && (
+          <p className="mt-2 text-right text-sm"><Link href="/esqueci-senha" className="text-accent underline">Esqueci minha senha</Link></p>
+        )}
       </div>
+      {mode === "cadastro" && (
+        <label className="flex items-start gap-3 text-sm text-muted">
+          <input type="checkbox" name="terms" required className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--accent)]" />
+          <span>
+            Li e aceito os <Link href="/termos" target="_blank" className="text-accent underline">Termos de uso</Link> e a{" "}
+            <Link href="/privacidade" target="_blank" className="text-accent underline">Política de privacidade</Link>.
+          </span>
+        </label>
+      )}
       {state?.error && <p className="text-sm text-danger" role="alert">{state.error}</p>}
       <button className="btn-primary w-full" disabled={pending}>
         {pending ? "Aguarde..." : mode === "entrar" ? "Entrar" : "Criar conta"}

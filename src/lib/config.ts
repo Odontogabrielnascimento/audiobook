@@ -4,6 +4,10 @@ export const config = {
   planPrice: Number(process.env.PLAN_PRICE || "19.90"),
   planDescription: process.env.PLAN_DESCRIPTION || "Assinatura mensal",
   graceDays: Number(process.env.GRACE_DAYS || "3"),
+  // Dados exibidos em Ajuda, Termos e Privacidade
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
+  legalName: process.env.NEXT_PUBLIC_LEGAL_NAME || "",
+  legalId: process.env.NEXT_PUBLIC_LEGAL_ID || "",
 };
 
 export function formatBRL(value: number) {

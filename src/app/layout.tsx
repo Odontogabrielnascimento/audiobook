@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { RegisterSW } from "@/components/RegisterSW";
@@ -32,7 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh">
         <PlayerProvider>
           <Header />
-          <main className="pb-44 md:pb-32">{children}</main>
+          <main className="min-h-[70vh] pb-12">{children}</main>
+          <Footer />
         </PlayerProvider>
         <RegisterSW />
       </body>

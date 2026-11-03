@@ -130,3 +130,25 @@ create table if not exists site_settings (
   value      text not null,
   updated_at timestamptz not null default now()
 );
+
+-- ===== Conta e seguranca =====
+alter table users add column if not exists password_changed_at timestamptz;
+alter table users add column if not exists terms_accepted_at timestamptz;
+alter table users add column if not exists deleted_at timestamptz;
+
+-- Tentativas de login e de recuperacao de senha (limite contra robos)
+create table if not exists auth_attempts (
+  id         bigserial primary key,
+  kind       text not null,
+  key        text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists auth_attempts_idx on auth_attempts (kind, key, created_at desc);
+
+create table if not exists password_resets (
+  token_hash text primary key,
+  user_id    uuid not null references users(id) on delete cascade,
+  expires_at timestamptz not null,
+  used_at    timestamptz,
+  created_at timestamptz not null default now()
+);

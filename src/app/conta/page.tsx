@@ -5,6 +5,7 @@ import { formatBRL, formatDate } from "@/lib/config";
 import { signOut } from "../(auth)/actions";
 import { cancelMySubscription } from "./actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { DeleteAccount } from "./DeleteAccount";
 
 export const metadata = { title: "Minha conta" };
 
@@ -83,9 +84,18 @@ export default async function Conta() {
         </section>
       )}
 
-      <form action={signOut}>
-        <button className="btn-ghost">Sair</button>
-      </form>
+      <div className="flex flex-wrap items-center gap-3">
+        <form action={signOut}>
+          <button className="btn-ghost">Sair</button>
+        </form>
+        <Link href="/ajuda" className="btn-ghost">Ajuda</Link>
+      </div>
+
+      {user.role !== "admin" && (
+        <div className="border-t border-line pt-6">
+          <DeleteAccount />
+        </div>
+      )}
     </div>
   );
 }

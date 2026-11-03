@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { queryOne } from "./db";
-import { getSessionUserId } from "./session";
+import { getSession } from "./session";
 
 export type User = {
   id: string;
@@ -28,12 +28,15 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
   .filter(Boolean);
 
 export const getCurrentUser = cache(async (): Promise<User | null> => {
-  const id = await getSessionUserId();
-  if (!id) return null;
-  const user = await queryOne<User>(
-    "select id, name, email, cpf, role, asaas_customer_id from users where id = $1",
-    [id],
+  const session = await getSession();
+  if (!session) return null;
+  const user = await queryOne<User & { password_changed_at: Date | null }>(
+    `select id, name, email, cpf, role, asaas_customer_id, password_changed_at
+       from users where id = $1 and deleted_at is null`,
+    [session.userId],
   );
+  // Sessoes abertas antes da ultima troca de senha deixam de valer
+  if (user?.password_changed_at && session.issuedAt * 1000 < user.password_changed_at.getTime() - 1000) return null;
   if (user && ADMIN_EMAILS.includes(user.email)) user.role = "admin";
   return user;
 });
