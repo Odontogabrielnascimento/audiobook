@@ -18,14 +18,49 @@ function readBook(form: FormData) {
   };
 }
 
-async function uniqueSlug(title: string, ignoreId?: string) {
+async function uniqueSlug(title: string, ignoreId?: string, table: "books" | "categories" | "series" = "books") {
   const base = slugify(title);
   let slug = base;
   for (let i = 2; ; i++) {
-    const hit = await queryOne<{ id: string }>("select id from books where slug = $1", [slug]);
+    const hit = await queryOne<{ id: string }>(`select id from ${table} where slug = $1`, [slug]);
     if (!hit || hit.id === ignoreId) return slug;
     slug = `${base}-${i}`;
   }
+}
+
+const UUID = /^[0-9a-f-]{36}$/;
+
+// Grava categorias e serie do livro a partir do formulario
+async function saveTaxonomy(bookId: string, form: FormData) {
+  const categoryIds = form.getAll("categories").map(String).filter((id) => UUID.test(id));
+  await query("delete from book_categories where book_id = $1", [bookId]);
+  if (categoryIds.length) {
+    await query(
+      `insert into book_categories (book_id, category_id)
+       select $1, id from categories where id = any($2::uuid[]) on conflict do nothing`,
+      [bookId, categoryIds],
+    );
+  }
+
+  let seriesId: string | null = String(form.get("series_id") || "");
+  const newSeries = String(form.get("series_new") || "").trim();
+  if (seriesId === "new" && newSeries) {
+    const [row] = await query<{ id: string }>(
+      "insert into series (slug, name) values ($1, $2) returning id",
+      [await uniqueSlug(newSeries, undefined, "series"), newSeries],
+    );
+    seriesId = row.id;
+  } else if (!UUID.test(seriesId)) {
+    seriesId = null;
+  }
+  const pos = Number(form.get("series_position"));
+  await query("update books set series_id = $2, series_position = $3 where id = $1", [
+    bookId,
+    seriesId,
+    seriesId && Number.isInteger(pos) && pos > 0 ? pos : null,
+  ]);
+  // Remove series que ficaram sem livros
+  await query("delete from series s where not exists (select 1 from books b where b.series_id = s.id)");
 }
 
 export async function createBook(_: BookFormState, form: FormData): Promise<BookFormState> {
@@ -36,6 +71,7 @@ export async function createBook(_: BookFormState, form: FormData): Promise<Book
     `insert into books (slug, title, author, narrator, description) values ($1, $2, $3, $4, $5) returning id`,
     [await uniqueSlug(b.title), b.title, b.author, b.narrator, b.description],
   );
+  await saveTaxonomy(row.id, form);
   redirect(`/admin/livros/${row.id}`);
 }
 
@@ -47,6 +83,7 @@ export async function updateBook(bookId: string, _: BookFormState, form: FormDat
     `update books set title = $2, author = $3, narrator = $4, description = $5 where id = $1`,
     [bookId, b.title, b.author, b.narrator, b.description],
   );
+  await saveTaxonomy(bookId, form);
   revalidatePath(`/admin/livros/${bookId}`);
   return { ok: true };
 }
@@ -131,4 +168,47 @@ export async function deleteChapter(chapterId: string) {
   if (!row) return;
   await deleteFile(row.audio_key);
   revalidatePath(`/admin/livros/${row.book_id}`);
+}
+
+// ---- Categorias ----
+
+export async function createCategory(form: FormData) {
+  await requireAdmin();
+  const name = String(form.get("name") || "").trim().slice(0, 60);
+  if (!name) return;
+  await query(
+    `insert into categories (slug, name, position)
+     values ($1, $2, coalesce((select max(position) + 1 from categories), 1))`,
+    [await uniqueSlug(name, undefined, "categories"), name],
+  );
+  revalidatePath("/admin/categorias");
+}
+
+export async function renameCategory(id: string, name: string) {
+  await requireAdmin();
+  const n = name.trim().slice(0, 60);
+  if (!UUID.test(id) || !n) return;
+  await query("update categories set name = $2 where id = $1", [id, n]);
+  revalidatePath("/admin/categorias");
+}
+
+export async function moveCategory(id: string, direction: -1 | 1) {
+  await requireAdmin();
+  const list = await query<{ id: string }>("select id from categories order by position, name");
+  const i = list.findIndex((c) => c.id === id);
+  const j = i + direction;
+  if (i < 0 || j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  await query(
+    "update categories c set position = v.pos from unnest($1::uuid[]) with ordinality as v(id, pos) where c.id = v.id",
+    [list.map((c) => c.id)],
+  );
+  revalidatePath("/admin/categorias");
+}
+
+export async function deleteCategory(id: string) {
+  await requireAdmin();
+  if (!UUID.test(id)) return;
+  await query("delete from categories where id = $1", [id]);
+  revalidatePath("/admin/categorias");
 }

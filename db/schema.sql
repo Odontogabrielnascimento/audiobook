@@ -76,3 +76,48 @@ create table if not exists progress (
   updated_at       timestamptz not null default now(),
   primary key (user_id, book_id)
 );
+
+-- ===== Fase 1: descoberta e biblioteca pessoal =====
+
+create table if not exists categories (
+  id         uuid primary key default gen_random_uuid(),
+  slug       text not null unique,
+  name       text not null,
+  position   integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists book_categories (
+  book_id     uuid not null references books(id) on delete cascade,
+  category_id uuid not null references categories(id) on delete cascade,
+  primary key (book_id, category_id)
+);
+create index if not exists book_categories_cat_idx on book_categories (category_id);
+
+create table if not exists series (
+  id         uuid primary key default gen_random_uuid(),
+  slug       text not null unique,
+  name       text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table books add column if not exists series_id uuid references series(id) on delete set null;
+alter table books add column if not exists series_position integer;
+
+-- Estante pessoal: "quero ouvir" e "concluidos"
+create table if not exists shelf (
+  user_id    uuid not null references users(id) on delete cascade,
+  book_id    uuid not null references books(id) on delete cascade,
+  status     text not null check (status in ('want', 'finished')),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, book_id)
+);
+
+create table if not exists ratings (
+  user_id    uuid not null references users(id) on delete cascade,
+  book_id    uuid not null references books(id) on delete cascade,
+  stars      smallint not null check (stars between 1 and 5),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, book_id)
+);
+create index if not exists ratings_book_idx on ratings (book_id);

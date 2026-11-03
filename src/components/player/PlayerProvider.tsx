@@ -209,7 +209,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         onEnded={() => {
           const q = queueRef.current;
           if (q && q.index < q.chapters.length - 1) goTo(q.index + 1);
-          else setPlaying(false);
+          else {
+            setPlaying(false);
+            // Ultima faixa terminou: o livro vai para "Concluidos"
+            if (q) fetch("/api/shelf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bookId: q.book.id }) }).catch(() => {});
+          }
         }}
         onError={(e) => {
           const a = e.currentTarget;

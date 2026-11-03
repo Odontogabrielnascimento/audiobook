@@ -21,9 +21,10 @@ export default async function Admin() {
 
   return (
     <div className="container-page py-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-3xl font-semibold">Painel</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/categorias" className="btn-ghost">Categorias</Link>
           <Link href="/admin/diagnostico" className="btn-ghost">Diagnóstico</Link>
           <Link href="/admin/livros/novo" className="btn-primary">Novo livro</Link>
         </div>

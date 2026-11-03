@@ -15,6 +15,7 @@ export function formatDuration(totalSeconds: number) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   if (h > 0) return `${h}h ${String(m).padStart(2, "0")}min`;
+  if (m === 0) return s > 0 ? "menos de 1 min" : "0 min";
   return `${m} min`;
 }
 

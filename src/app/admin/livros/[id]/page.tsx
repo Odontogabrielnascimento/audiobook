@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Cover } from "@/components/BookCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { requireAdmin } from "@/lib/auth";
-import { getBookById, listChapters } from "@/lib/catalog";
+import { categoriesOfBook, getBookById, listCategories, listChapters, listSeries } from "@/lib/catalog";
 import { deleteBook, togglePublished, updateBook } from "../../actions";
 import { BookForm } from "../../BookForm";
 import { ChapterManager } from "./ChapterManager";
@@ -17,7 +17,9 @@ export default async function EditBook({ params }: { params: Promise<{ id: strin
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
   const book = await getBookById(id);
   if (!book) notFound();
-  const chapters = await listChapters(id);
+  const [chapters, categories, series, bookCategories] = await Promise.all([
+    listChapters(id), listCategories(), listSeries(), categoriesOfBook(id),
+  ]);
 
   return (
     <div className="container-page max-w-3xl space-y-6 py-8">
@@ -41,7 +43,14 @@ export default async function EditBook({ params }: { params: Promise<{ id: strin
           <Cover book={book} />
           <CoverUploader bookId={id} />
         </div>
-        <BookForm action={updateBook.bind(null, id)} book={book} submitLabel="Salvar dados" />
+        <BookForm
+          action={updateBook.bind(null, id)}
+          book={book}
+          submitLabel="Salvar dados"
+          categories={categories}
+          series={series}
+          selectedCategories={bookCategories.map((c) => c.id)}
+        />
       </section>
 
       <section className="card p-6">
