@@ -71,7 +71,7 @@ export function PlayerBar() {
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface-2/90 shadow-2xl shadow-black/50 backdrop-blur-xl">
             <div className="flex items-center gap-3 p-2 pr-3">
               <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label="Abrir player">
-                <CoverArt url={book.coverUrl} className="h-12 w-12 shrink-0 rounded-xl" />
+                <CoverArt url={book.coverUrl} className="h-14 w-[38px] shrink-0 rounded-md" />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{ch.title}</p>
                   <p className="truncate text-xs text-muted">{book.title}</p>
@@ -119,7 +119,7 @@ export function PlayerBar() {
             </div>
 
             <div className="mt-8 flex-1">
-              <CoverArt url={book.coverUrl} className="mx-auto aspect-square w-full max-w-[340px] rounded-3xl shadow-2xl shadow-black/60" />
+              <CoverArt url={book.coverUrl} className="mx-auto aspect-[2/3] w-full max-w-[min(240px,32vh)] rounded-xl shadow-2xl shadow-black/60" />
               <div className="mt-8">
                 <p className="text-sm font-semibold text-accent">Faixa {index + 1} de {chapters.length}</p>
                 <h2 className="mt-1 text-2xl font-semibold leading-tight">{ch.title}</h2>

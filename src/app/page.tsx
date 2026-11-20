@@ -52,7 +52,7 @@ export default async function Home() {
               {fan.map((url, k) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img key={url} src={url} alt=""
-                  className="absolute left-1/2 top-1/2 w-60 rounded-3xl shadow-2xl shadow-black/70 ring-1 ring-white/10"
+                  className="absolute left-1/2 top-1/2 aspect-[2/3] w-48 rounded-xl object-cover shadow-2xl shadow-black/70 ring-1 ring-white/10"
                   style={{ transform: `translate(-50%, -50%) translateX(${(k - (fan.length - 1) / 2) * 90}px) rotate(${(k - (fan.length - 1) / 2) * 8}deg)`, zIndex: k === Math.floor(fan.length / 2) ? 10 : k }} />
               ))}
             </div>

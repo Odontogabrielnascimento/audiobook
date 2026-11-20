@@ -23,7 +23,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ slug: s
         {books.map((b, i) => (
           <li key={b.id}>
             <Link href={`/livro/${b.slug}`} className="card flex items-center gap-4 p-3 hover:border-accent">
-              <div className="w-20 shrink-0"><Cover book={b} /></div>
+              <div className="w-16 shrink-0"><Cover book={b} /></div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-accent">Volume {b.series_position ?? i + 1}</p>
                 <p className="font-semibold leading-snug">{b.title}</p>

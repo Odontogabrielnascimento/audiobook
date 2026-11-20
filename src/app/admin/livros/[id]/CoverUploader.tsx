@@ -28,7 +28,7 @@ export function CoverUploader({ bookId }: { bookId: string }) {
         Trocar capa
         <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
       </label>
-      <p className="mt-1 text-xs text-muted">{status ?? "Quadrada, mín. 1000×1000 px"}</p>
+      <p className="mt-1 text-xs text-muted">{status ?? "Formato de livro (2:3), ex.: 1600×2400 px"}</p>
     </div>
   );
 }

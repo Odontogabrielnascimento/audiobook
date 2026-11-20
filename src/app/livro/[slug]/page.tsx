@@ -51,9 +51,9 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         <div className="absolute inset-0 bg-gradient-to-b from-paper/30 via-paper/70 to-paper" />
       </div>
       <div className="container-page pt-8">
-        <div className="grid gap-8 md:grid-cols-[300px_1fr] md:items-end">
-          <div className="mx-auto w-full max-w-[280px] md:max-w-none">
-            <Cover book={book} className="!rounded-3xl shadow-2xl shadow-black/60" />
+        <div className="grid gap-8 md:grid-cols-[260px_1fr] md:items-end">
+          <div className="mx-auto w-full max-w-[220px] md:max-w-none">
+            <Cover book={book} className="!rounded-xl shadow-2xl shadow-black/60" />
           </div>
           <div>
             {!book.published && <p className="mb-2 text-sm font-semibold text-warn">Rascunho (visível só para administradores)</p>}

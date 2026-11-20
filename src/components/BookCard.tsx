@@ -7,9 +7,9 @@ export function Cover({ book, className = "" }: { book: { id: string; title: str
   return url ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt={`Capa de ${book.title}`} loading="lazy"
-      className={`aspect-square w-full rounded-2xl object-cover shadow-lg shadow-black/40 ring-1 ring-white/5 ${className}`} />
+      className={`aspect-[2/3] w-full rounded-lg object-cover shadow-lg shadow-black/40 ring-1 ring-white/5 ${className}`} />
   ) : (
-    <div className={`glow flex aspect-square w-full items-end rounded-2xl p-3 font-serif text-sm font-semibold leading-tight ring-1 ring-white/5 ${className}`}>
+    <div className={`glow flex aspect-[2/3] w-full items-end rounded-lg p-3 font-serif text-sm font-semibold leading-tight ring-1 ring-white/5 ${className}`}>
       {book.title}
     </div>
   );
@@ -62,7 +62,7 @@ export function ContinueCard({ book }: { book: Book & { chapter_title: string; e
   const left = Math.max(0, book.total_seconds - book.elapsed_seconds);
   return (
     <Link href={`/livro/${book.slug}`} className="card flex w-72 items-center gap-3 p-2.5 pr-4 transition hover:border-accent/50 sm:w-80">
-      <div className="w-16 shrink-0"><Cover book={book} className="!rounded-xl" /></div>
+      <div className="w-12 shrink-0"><Cover book={book} className="!rounded-md" /></div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{book.title}</p>
         <p className="truncate text-xs text-muted">{book.chapter_title}</p>

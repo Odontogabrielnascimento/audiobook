@@ -43,7 +43,7 @@ export function HeroCarousel({ items }: { items: HeroItem[] }) {
       <div className="absolute inset-0 bg-gradient-to-b from-paper/20 via-paper/50 to-paper" aria-hidden />
       <div className="absolute inset-0 bg-gradient-to-r from-paper/80 via-paper/20 to-transparent" aria-hidden />
 
-      <div className="container-page relative grid items-center gap-8 pb-12 pt-8 md:grid-cols-[1fr_340px] md:pb-16 md:pt-14">
+      <div className="container-page relative grid items-center gap-8 pb-12 pt-8 md:grid-cols-[1fr_280px] md:pb-16 md:pt-14">
         <div key={it.slug} className="order-2 animate-[fadeUp_.6s_ease] md:order-1">
           <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
             ✦ Em destaque
@@ -60,13 +60,13 @@ export function HeroCarousel({ items }: { items: HeroItem[] }) {
           </div>
         </div>
 
-        <Link href={`/livro/${it.slug}`} className="order-1 mx-auto w-52 sm:w-64 md:order-2 md:w-full" tabIndex={-1}>
+        <Link href={`/livro/${it.slug}`} className="order-1 mx-auto w-40 sm:w-52 md:order-2 md:w-full" tabIndex={-1}>
           {it.coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={it.slug} src={it.coverUrl} alt={`Capa de ${it.title}`}
-              className="aspect-square w-full animate-[fadeUp_.6s_ease] rounded-3xl object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10" />
+              className="aspect-[2/3] w-full animate-[fadeUp_.6s_ease] rounded-xl object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10" />
           ) : (
-            <div className="glow aspect-square w-full rounded-3xl ring-1 ring-white/10" />
+            <div className="glow aspect-[2/3] w-full rounded-xl ring-1 ring-white/10" />
           )}
         </Link>
       </div>
