@@ -1,7 +1,20 @@
 "use client";
 
+// Limite por arquivo do armazenamento (Supabase gratuito: 50 MB). Ajuste com NEXT_PUBLIC_MAX_UPLOAD_MB.
+export const MAX_UPLOAD_MB = Number(process.env.NEXT_PUBLIC_MAX_UPLOAD_MB || "50");
+
+export function sizeMB(file: File) {
+  return file.size / (1024 * 1024);
+}
+
+export function tooBigMessage(file: File) {
+  return `Arquivo de ${sizeMB(file).toFixed(0).replace(".", ",")} MB: o limite é ${MAX_UPLOAD_MB} MB por arquivo. ` +
+    "Exporte em MP3 mono de 64 kbps (cerca de 28 MB por hora de áudio) ou divida em faixas menores.";
+}
+
 // Envia um arquivo direto para o armazenamento usando a URL gerada pelo servidor
 export async function uploadFile(kind: "audio" | "cover", file: File, onProgress?: (pct: number) => void) {
+  if (sizeMB(file) > MAX_UPLOAD_MB) throw new Error(tooBigMessage(file));
   const res = await fetch("/api/admin/upload-url", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,7 +36,12 @@ export async function uploadFile(kind: "audio" | "cover", file: File, onProgress
       const msg = body.match(/<Message>([^<]*)<\/Message>/)?.[1] ?? body.slice(0, 200);
       reject(new Error(`Falha no envio (${xhr.status})${code ? ` ${code}` : ""}${msg ? `: ${msg}` : ""}`));
     };
-    xhr.onerror = () => reject(new Error("Falha de rede no envio"));
+    xhr.onerror = () =>
+      reject(new Error(
+        sizeMB(file) > MAX_UPLOAD_MB * 0.9
+          ? tooBigMessage(file)
+          : "A conexão caiu durante o envio. Verifique a internet e tente de novo.",
+      ));
     xhr.send(file);
   });
   return key;

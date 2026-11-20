@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { fmt } from "@/components/player/PlayerBar";
 import { addChapter, deleteChapter, moveChapter, renameChapter } from "../../actions";
-import { audioDuration, uploadFile } from "../../upload";
+import { MAX_UPLOAD_MB, audioDuration, sizeMB, tooBigMessage, uploadFile } from "../../upload";
 
 type Ch = { id: string; title: string; duration: number };
 type Job = { name: string; pct: number; error?: string };
@@ -24,9 +24,19 @@ export function ChapterManager({ bookId, chapters }: { bookId: string; chapters:
 
   async function onFiles(list: FileList | null) {
     if (!list?.length) return;
-    const files = [...list].sort((a, b) => natural.compare(a.name, b.name));
+    const all = [...list].sort((a, b) => natural.compare(a.name, b.name));
+    // Arquivos acima do limite nem comecam a ser enviados
+    const tooBig = all.filter((f) => sizeMB(f) > MAX_UPLOAD_MB);
+    const files = all.filter((f) => sizeMB(f) <= MAX_UPLOAD_MB);
+    if (files.length === 0) {
+      setJobs(tooBig.map((f) => ({ name: f.name, pct: 0, error: tooBigMessage(f) })));
+      return;
+    }
     setBusy(true);
-    setJobs(files.map((f) => ({ name: f.name, pct: 0 })));
+    setJobs([
+      ...files.map((f) => ({ name: f.name, pct: 0 })),
+      ...tooBig.map((f) => ({ name: f.name, pct: 0, error: tooBigMessage(f) })),
+    ]);
     // Envia em sequencia para manter a ordem das faixas
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
@@ -88,7 +98,8 @@ export function ChapterManager({ bookId, chapters }: { bookId: string; chapters:
         <input type="file" accept="audio/*,.m4b" multiple className="sr-only" disabled={busy} onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />
       </label>
       <p className="text-xs text-muted">
-        MP3 ou M4A. Selecione vários de uma vez: entram em ordem pelo nome do arquivo e o título vem do nome (dá para editar depois).
+        MP3 ou M4A, até {MAX_UPLOAD_MB} MB por arquivo. Recomendado: MP3 mono de 64 kbps (cerca de 28 MB por hora).
+        Selecione vários de uma vez: entram em ordem pelo nome do arquivo e o título vem do nome (dá para editar depois).
       </p>
     </div>
   );
