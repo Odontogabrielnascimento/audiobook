@@ -77,6 +77,13 @@ export function PlayerBar() {
                   <p className="truncate text-xs text-muted">{book.title}</p>
                 </div>
               </button>
+              <button
+                onClick={() => p.setRate(RATES[(RATES.indexOf(p.rate) + 1) % RATES.length] ?? 1)}
+                className={`min-w-11 rounded-full px-2 py-1.5 text-xs font-bold tabular-nums ${p.rate !== 1 ? "bg-accent/15 text-accent" : "text-muted hover:text-ink"}`}
+                aria-label={`Velocidade ${String(p.rate).replace(".", ",")}x. Tocar para mudar`}
+              >
+                {String(p.rate).replace(".", ",")}×
+              </button>
               <button onClick={() => p.skip(-15)} className="hidden p-1 text-muted hover:text-ink sm:block" aria-label="Voltar 15 segundos">
                 <SkipIcon seconds={15} />
               </button>
@@ -149,10 +156,10 @@ export function PlayerBar() {
               <div className="mt-8 space-y-4">
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Velocidade</p>
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                  <div className="grid grid-cols-6 gap-1.5">
                     {RATES.map((r) => (
-                      <button key={r} onClick={() => p.setRate(r)}
-                        className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold ${p.rate === r ? "bg-ink text-paper" : "bg-white/10"}`}>
+                      <button key={r} onClick={() => p.setRate(r)} aria-pressed={p.rate === r}
+                        className={`rounded-full py-2 text-sm font-semibold tabular-nums ${p.rate === r ? "bg-ink text-paper" : "bg-white/10"}`}>
                         {String(r).replace(".", ",")}×
                       </button>
                     ))}
