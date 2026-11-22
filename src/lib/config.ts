@@ -1,5 +1,6 @@
 export const config = {
-  appName: process.env.NEXT_PUBLIC_APP_NAME || "Sarça Play",
+  // Nome fixo da marca (a antiga variavel NEXT_PUBLIC_APP_NAME foi descontinuada)
+  appName: "Sarça Play",
   appUrl: (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, ""),
   planPrice: Number(process.env.PLAN_PRICE || "19.90"),
   planDescription: process.env.PLAN_DESCRIPTION || "Assinatura mensal",
