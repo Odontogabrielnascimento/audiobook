@@ -5,11 +5,11 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: config.appName,
     short_name: config.appName,
-    description: "Audiobooks por assinatura",
+    description: "Audiolivros cristãos por assinatura",
     start_url: "/biblioteca",
     display: "standalone",
-    background_color: "#090d18",
-    theme_color: "#090d18",
+    background_color: "#140f0d",
+    theme_color: "#140f0d",
     lang: "pt-BR",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

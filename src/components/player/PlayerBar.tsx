@@ -149,8 +149,8 @@ export function PlayerBar() {
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M6 5h2v14H6zM20 6.2v11.6a1 1 0 0 1-1.5.86L9.6 13a1 1 0 0 1 0-1.72l8.9-5.66A1 1 0 0 1 20 6.2z" /></svg>
                 </button>
                 <button onClick={() => p.skip(-15)} aria-label="Voltar 15 segundos"><SkipIcon seconds={15} /></button>
-                <button onClick={p.toggle} className="grid h-20 w-20 place-items-center rounded-full text-accent-ink shadow-[0_12px_40px_-10px_rgba(232,184,74,0.7)]"
-                  style={{ background: "linear-gradient(135deg, var(--accent-2), var(--accent))" }} aria-label={p.playing ? "Pausar" : "Tocar"}>
+                <button onClick={p.toggle} className="grid h-20 w-20 place-items-center rounded-full text-accent-ink shadow-[0_12px_40px_-10px_rgba(228,87,46,0.7)]"
+                  style={{ background: "linear-gradient(135deg, var(--accent), var(--flame))" }} aria-label={p.playing ? "Pausar" : "Tocar"}>
                   <PlayIcon playing={p.playing} size={32} />
                 </button>
                 <button onClick={() => p.skip(30)} aria-label="Avançar 30 segundos"><SkipIcon seconds={30} forward /></button>

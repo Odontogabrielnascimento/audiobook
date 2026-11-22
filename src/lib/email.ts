@@ -33,11 +33,11 @@ export async function sendEmail(to: string, subject: string, html: string, text:
 
 export function emailLayout(title: string, body: string, button?: { label: string; url: string }) {
   const btn = button
-    ? `<p style="margin:28px 0"><a href="${button.url}" style="background:#e8b84a;color:#1b1405;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block">${button.label}</a></p>`
+    ? `<p style="margin:28px 0"><a href="${button.url}" style="background:#e4572e;color:#ffffff;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block">${button.label}</a></p>`
     : "";
   return `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:Arial,sans-serif;color:#1d1914">
 <div style="max-width:520px;margin:0 auto;padding:32px 20px">
-<p style="font-size:20px;font-weight:700;margin:0 0 24px">${config.appName}</p>
+<p style="font-size:22px;font-weight:700;margin:0 0 24px;color:#1c1512">${config.appName}</p>
 <div style="background:#fff;border-radius:16px;padding:28px">
 <h1 style="font-size:22px;margin:0 0 12px">${title}</h1>
 ${body}${btn}

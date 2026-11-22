@@ -1,5 +1,5 @@
 export const config = {
-  appName: process.env.NEXT_PUBLIC_APP_NAME || "Audiobook",
+  appName: process.env.NEXT_PUBLIC_APP_NAME || "Sarça Play",
   appUrl: (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, ""),
   planPrice: Number(process.env.PLAN_PRICE || "19.90"),
   planDescription: process.env.PLAN_DESCRIPTION || "Assinatura mensal",

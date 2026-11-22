@@ -4,16 +4,8 @@ import { config } from "@/lib/config";
 import { BottomNav, TopLinks, type NavItem } from "./Nav";
 
 export function Logo() {
-  return (
-    <span className="flex items-center gap-2 font-serif text-xl font-semibold tracking-tight">
-      <span className="grid h-8 w-8 place-items-center rounded-xl text-accent-ink" style={{ background: "linear-gradient(135deg, var(--accent-2), var(--accent))" }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-          <path d="M5 14v-2a7 7 0 0 1 14 0v2" /><rect x="3.5" y="13.5" width="4" height="6" rx="1.5" fill="currentColor" /><rect x="16.5" y="13.5" width="4" height="6" rx="1.5" fill="currentColor" />
-        </svg>
-      </span>
-      {config.appName}
-    </span>
-  );
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/brand/logo-topo.svg" alt={config.appName} className="h-8 w-auto sm:h-9" />;
 }
 
 export async function Header() {

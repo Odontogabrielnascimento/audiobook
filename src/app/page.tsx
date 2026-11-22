@@ -35,7 +35,7 @@ export default async function Home() {
             ✦ Audiolivros cristãos
           </p>
           <h1 className="max-w-3xl text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-            A Palavra que <span className="bg-gradient-to-r from-accent-2 to-accent bg-clip-text text-transparent">acompanha</span> o seu dia.
+            A Palavra que <span className="bg-gradient-to-r from-accent to-flame bg-clip-text text-transparent">acompanha</span> o seu dia.
           </h1>
           <p className="mt-5 max-w-xl text-lg text-ink/80">
             Livros de fé, teologia e vida cristã narrados para ouvir no caminho, em casa ou antes de dormir.
