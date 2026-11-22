@@ -79,7 +79,7 @@ Caminho mais simples: **Supabase** para banco e áudios, **Vercel** para o app. 
    - `SESSION_SECRET`: uma frase aleatória longa, com no mínimo 32 caracteres
    - `ADMIN_EMAILS`: o seu e-mail
    - `ASAAS_WEBHOOK_TOKEN`: qualquer frase longa
-   - `PLAN_PRICE=19.90` e `NEXT_PUBLIC_APP_NAME` com o nome do app
+   - `PLAN_PRICE=19.90`
 3. Clique em *Deploy*. As tabelas são criadas automaticamente durante a publicação.
 4. Copie o endereço gerado (`https://....vercel.app`), coloque em `APP_URL` e publique de novo em *Deployments > Redeploy*.
 5. Abra o endereço, crie sua conta em **Cadastro** com o e-mail de `ADMIN_EMAILS`, e o menu **Admin** aparece.
@@ -109,7 +109,7 @@ Quando o volume crescer, o R2 é mais barato para áudio porque não cobra tráf
 - [ ] Contratos de licença de cada obra, com autor ou editora e com o narrador
 - [ ] Recuperação de senha por e-mail (ainda não implementada)
 - [ ] Limite de tentativas de login (o provedor de hospedagem ou um WAF resolve)
-- [ ] Ícone e nome definitivos (`public/icons/icon.svg` e `NEXT_PUBLIC_APP_NAME`)
+- [x] Nome e marca definidos: Sarça Play (arquivos em `marca/`)
 
 ## Estrutura
 
