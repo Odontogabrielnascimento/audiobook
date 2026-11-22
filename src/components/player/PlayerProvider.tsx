@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { PlayerBar } from "./PlayerBar";
 
 export type PlayerChapter = { id: string; title: string; duration: number };
-export type PlayerBook = { id: string; slug: string; title: string; author: string; coverUrl: string | null };
+export type PlayerBook = { id: string; slug: string; title: string; author: string; coverUrl: string | null; partial?: boolean };
 
 type Queue = { book: PlayerBook; chapters: PlayerChapter[]; index: number };
 
@@ -209,7 +209,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         onEnded={() => {
           const q = queueRef.current;
           if (q && q.index < q.chapters.length - 1) goTo(q.index + 1);
-          else {
+          else if (q?.book.partial) {
+            setPlaying(false);
+            setError("Fim da amostra grátis. Assine para ouvir o livro completo.");
+          } else {
             setPlaying(false);
             // Ultima faixa terminou: o livro vai para "Concluidos"
             if (q) fetch("/api/shelf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bookId: q.book.id }) }).catch(() => {});

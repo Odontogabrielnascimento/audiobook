@@ -62,6 +62,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                 {book.series_name}{book.series_position ? ` · Volume ${book.series_position}` : ""}
               </Link>
             )}
+            {book.access !== "subscribers" && (
+              <p className="mb-2 mt-2 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-accent-ink">
+                {book.access === "free" ? "Grátis" : "Amostra grátis"}
+              </p>
+            )}
             <h1 className="mt-1 text-4xl font-semibold leading-[1.05] sm:text-5xl">{book.title}</h1>
             <p className="mt-2 text-lg text-ink/80">
               {book.author}
@@ -92,7 +97,9 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         <ChapterList
           book={{ id: book.id, slug: book.slug, title: book.title, author: book.author, coverUrl: coverUrl(book) }}
           chapters={chapters.map((c) => ({ id: c.id, title: c.title, duration: c.duration_seconds }))}
-          gate={!user ? "login" : access ? null : "subscribe"}
+          access={book.access}
+          loggedIn={!!user}
+          subscribed={access}
           progress={progress ? { chapterId: progress.chapter_id, position: progress.position_seconds } : null}
         />
       </div>

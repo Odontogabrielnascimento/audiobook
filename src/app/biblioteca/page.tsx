@@ -6,7 +6,7 @@ import { SearchBox } from "@/components/SearchBox";
 import { Row, Shelf } from "@/components/Shelf";
 import { getCurrentUser, hasAccess } from "@/lib/auth";
 import {
-  booksInCategory, continueListening, coverUrl, featuredBooks, listBooks, listCategories, popularBooks, shelfBooks,
+  booksInCategory, continueListening, coverUrl, featuredBooks, freeBooks, listBooks, listCategories, popularBooks, shelfBooks,
 } from "@/lib/catalog";
 import { config, formatBRL, formatDuration } from "@/lib/config";
 
@@ -19,7 +19,7 @@ function greeting() {
 
 export default async function Biblioteca() {
   const user = await getCurrentUser();
-  const [featured, recent, popular, categories, access, resume, wantList] = await Promise.all([
+  const [featured, recent, popular, categories, access, resume, wantList, free] = await Promise.all([
     featuredBooks(6),
     listBooks({ limit: 12 }),
     popularBooks(12),
@@ -27,6 +27,7 @@ export default async function Biblioteca() {
     user ? hasAccess(user) : Promise.resolve(false),
     user ? continueListening(user.id) : Promise.resolve([]),
     user ? shelfBooks(user.id, "want") : Promise.resolve([]),
+    freeBooks(12),
   ]);
   const byCategory = await Promise.all(categories.map(async (c) => ({ c, books: await booksInCategory(c.id, 12) })));
 
@@ -70,6 +71,7 @@ export default async function Biblioteca() {
         </Row>
       )}
       <Shelf title="Quero ouvir" eyebrow="Sua lista" href="/estante?aba=quero" books={wantList} />
+      {!access && <Shelf title="Ouça grátis" eyebrow="Para conhecer" books={free} />}
       <Shelf title="Novidades" eyebrow="Acabaram de chegar" books={recent} />
       <Shelf title="Mais ouvidos" eyebrow="Em alta" books={popular} />
       {byCategory.map(({ c, books }) => (

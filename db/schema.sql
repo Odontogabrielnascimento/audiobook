@@ -152,3 +152,10 @@ create table if not exists password_resets (
   used_at    timestamptz,
   created_at timestamptz not null default now()
 );
+
+-- ===== Demonstracao =====
+-- Quem pode ouvir o livro: so assinantes, amostra (1a faixa gratis) ou gratis (livro inteiro)
+alter table books add column if not exists access text not null default 'subscribers';
+do $$ begin
+  alter table books add constraint books_access_check check (access in ('subscribers', 'sample', 'free'));
+exception when duplicate_object then null; end $$;

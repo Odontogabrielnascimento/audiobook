@@ -11,6 +11,7 @@ export type Book = {
   cover_key: string | null;
   published: boolean;
   featured: boolean;
+  access: BookAccess;
   series_id: string | null;
   series_position: number | null;
   series_name: string | null;
@@ -30,6 +31,13 @@ export type Chapter = {
   duration_seconds: number;
 };
 
+export type BookAccess = "subscribers" | "sample" | "free";
+
+// A primeira faixa e a amostra gratis
+export function isChapterFree(access: BookAccess, index: number) {
+  return access === "free" || (access === "sample" && index === 0);
+}
+
 export type Category = { id: string; slug: string; name: string; position: number; book_count: number };
 export type Series = { id: string; slug: string; name: string };
 
@@ -39,7 +47,7 @@ export function coverUrl(b: { id: string; cover_key: string | null }) {
 
 // Consulta base de livros: duracao, faixas, serie e media de avaliacoes
 const BOOK_SELECT = `
-  select b.id, b.slug, b.title, b.author, b.narrator, b.description, b.cover_key, b.published, b.featured,
+  select b.id, b.slug, b.title, b.author, b.narrator, b.description, b.cover_key, b.published, b.featured, b.access,
          b.series_id, b.series_position, s.name as series_name, s.slug as series_slug,
          coalesce(c.total_seconds, 0)::int as total_seconds,
          coalesce(c.chapter_count, 0)::int as chapter_count,
@@ -78,6 +86,15 @@ export async function featuredBooks(limit = 6) {
   if (marked.length) return marked;
   return query<Book>(
     `${BOOK_SELECT} where b.published and b.cover_key is not null order by b.created_at desc limit $1`,
+    [limit],
+  );
+}
+
+// Livros gratis ou com amostra gratis (prateleira "Ouça grátis")
+export function freeBooks(limit = 12) {
+  return query<Book>(
+    `${BOOK_SELECT} where b.published and b.access <> 'subscribers'
+     order by (b.access = 'free') desc, b.created_at desc limit $1`,
     [limit],
   );
 }

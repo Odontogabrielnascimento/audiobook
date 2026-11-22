@@ -31,6 +31,11 @@ export function BookCard({ book, subtitle }: { book: Book; subtitle?: string }) 
     <Link href={`/livro/${book.slug}`} className="group block">
       <div className="relative">
         <Cover book={book} className="transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl" />
+        {book.access !== "subscribers" && (
+          <span className="absolute left-2 top-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-ink shadow">
+            {book.access === "free" ? "Grátis" : "Amostra"}
+          </span>
+        )}
         <span className="absolute bottom-2 right-2 grid h-9 w-9 translate-y-1 place-items-center rounded-full text-accent-ink opacity-0 shadow-lg transition group-hover:translate-y-0 group-hover:opacity-100"
           style={{ background: "linear-gradient(135deg, var(--accent-2), var(--accent))" }} aria-hidden>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" /></svg>

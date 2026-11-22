@@ -54,7 +54,12 @@ async function saveTaxonomy(bookId: string, form: FormData) {
   } else if (!UUID.test(seriesId)) {
     seriesId = null;
   }
-  await query("update books set featured = $2 where id = $1", [bookId, form.get("featured") === "on"]);
+  const access = String(form.get("access") || "subscribers");
+  await query("update books set featured = $2, access = $3 where id = $1", [
+    bookId,
+    form.get("featured") === "on",
+    ["subscribers", "sample", "free"].includes(access) ? access : "subscribers",
+  ]);
 
   const pos = Number(form.get("series_position"));
   await query("update books set series_id = $2, series_position = $3 where id = $1", [

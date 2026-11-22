@@ -95,7 +95,15 @@ export function PlayerBar() {
               <div className="h-full bg-accent transition-[width] duration-300" style={{ width: `${pct}%` }} />
             </div>
           </div>
-          {p.error && <p className="mt-1 rounded-xl bg-surface px-3 py-2 text-xs text-danger">{p.error}</p>}
+          {p.error && (
+            p.error.startsWith("Fim da amostra") ? (
+              <Link href="/assinar" className="mt-1 block rounded-xl bg-accent px-3 py-2 text-center text-xs font-semibold text-accent-ink">
+                {p.error} Assinar agora →
+              </Link>
+            ) : (
+              <p className="mt-1 rounded-xl bg-surface px-3 py-2 text-xs text-danger">{p.error}</p>
+            )
+          )}
         </div>
       )}
 

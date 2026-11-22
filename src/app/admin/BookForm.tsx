@@ -12,6 +12,7 @@ type Book = {
   series_id?: string | null;
   series_position?: number | null;
   featured?: boolean;
+  access?: "subscribers" | "sample" | "free";
 };
 type Option = { id: string; name: string };
 
@@ -84,6 +85,25 @@ export function BookForm({ action, book, submitLabel, categories, series, select
           </div>
         )}
       </div>
+
+      <fieldset>
+        <legend className="label">Quem pode ouvir</legend>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {([
+            ["subscribers", "Só assinantes", "Padrão: exige assinatura."],
+            ["sample", "Amostra grátis", "A 1ª faixa é liberada para quem tem conta gratuita."],
+            ["free", "Grátis", "O livro inteiro é liberado para quem tem conta gratuita."],
+          ] as const).map(([value, title, text]) => (
+            <label key={value} className="flex cursor-pointer gap-2 rounded-2xl border border-line p-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
+              <input type="radio" name="access" value={value} defaultChecked={(book?.access ?? "subscribers") === value} className="mt-1 accent-[var(--accent)]" />
+              <span>
+                <span className="block text-sm font-semibold">{title}</span>
+                <span className="block text-xs text-muted">{text}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line p-3 has-[:checked]:border-accent">
         <input type="checkbox" name="featured" defaultChecked={book?.featured} className="h-4 w-4 accent-[var(--accent)]" />
