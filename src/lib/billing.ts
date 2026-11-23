@@ -10,7 +10,7 @@ export type AsaasEvent = {
   subscription?: { id: string; customer: string; status?: string };
 };
 
-const PAID = new Set(["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"]);
+const PAID = new Set(["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED", "PAYMENT_RECEIVED_IN_CASH"]);
 const REVOKE = new Set(["PAYMENT_REFUNDED", "PAYMENT_CHARGEBACK_REQUESTED", "PAYMENT_CHARGEBACK_DISPUTE"]);
 const SUB_ENDED = new Set(["SUBSCRIPTION_DELETED", "SUBSCRIPTION_INACTIVATED"]);
 
