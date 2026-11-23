@@ -50,7 +50,11 @@ export default async function Conta() {
         <div>
           <h2 className="text-xl font-semibold">Assinatura</h2>
           <p className="mt-1">{statusText}</p>
-          {sub && <p className="text-sm text-muted">Forma de pagamento: {sub.billing_type === "PIX" ? "Pix" : "Cartão de crédito"}</p>}
+          {sub && (
+            <p className="text-sm text-muted">
+              Plano {sub.plan === "yearly" ? "anual" : "mensal"} · {sub.billing_type === "PIX" ? "Pix" : "Cartão de crédito"}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap gap-3">
           {pending?.invoice_url && (

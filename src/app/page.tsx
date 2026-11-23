@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { listBooks } from "@/lib/catalog";
 import { config, formatBRL } from "@/lib/config";
 import { heroImageUrl } from "@/lib/settings";
+import { OfferBanner } from "@/components/OfferBanner";
 
 const FEATURES = [
   ["Todo o catálogo", "Ouça quantos livros quiser, sem limite de horas."],
@@ -43,6 +44,7 @@ export default async function Home() {
             <Link href="/biblioteca" className="btn-ghost !px-6 !py-3.5 !text-base">Ver o catálogo</Link>
           </div>
           <p className="mt-4 text-sm text-muted">Pix ou cartão de crédito. Cancele quando quiser.</p>
+          <div className="mt-8 max-w-xl"><OfferBanner href="/cadastro" compact /></div>
 
         </div>
       </section>

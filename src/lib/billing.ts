@@ -62,7 +62,8 @@ export async function processAsaasEvent(evt: AsaasEvent) {
         await client.query(
           `update subscriptions set
              access_until = greatest(coalesce(access_until, now()),
-                                     ($2::date + interval '1 month' + make_interval(days => $3))::timestamptz),
+                                     ($2::date + case when plan = 'yearly' then interval '1 year' else interval '1 month' end
+                                       + make_interval(days => $3))::timestamptz),
              status = case when status = 'canceled' then status else 'active' end,
              updated_at = now()
            where user_id = $1`,

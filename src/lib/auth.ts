@@ -19,6 +19,7 @@ export type Subscription = {
   billing_type: "PIX" | "CREDIT_CARD";
   status: "pending" | "active" | "overdue" | "canceled";
   access_until: Date | null;
+  plan: "monthly" | "yearly";
 };
 
 // E-mails listados em ADMIN_EMAILS (separados por virgula) sao sempre administradores
@@ -43,7 +44,7 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 
 export async function getSubscription(userId: string) {
   return queryOne<Subscription>(
-    `select id, asaas_subscription_id, billing_type, status, access_until
+    `select id, asaas_subscription_id, billing_type, status, access_until, plan
        from subscriptions where user_id = $1`,
     [userId],
   );

@@ -6,6 +6,7 @@ import * as asaas from "@/lib/asaas";
 import { config } from "@/lib/config";
 import { isValidCPF, onlyDigits } from "@/lib/cpf";
 import { query } from "@/lib/db";
+import { getPlan } from "@/lib/plans";
 
 export type CheckoutState = { error?: string } | undefined;
 
@@ -14,6 +15,8 @@ export async function startCheckout(_: CheckoutState, form: FormData): Promise<C
   const cpf = onlyDigits(String(form.get("cpf") || ""));
   const method = form.get("method") === "CREDIT_CARD" ? "CREDIT_CARD" : "PIX";
   if (!isValidCPF(cpf)) return { error: "CPF inválido. Confira os números." };
+  const plan = await getPlan(form.get("plan") === "yearly" ? "yearly" : "monthly");
+  if (!plan) return { error: "A oferta do plano anual foi encerrada. Escolha o plano mensal." };
   if (asaas.isMock && !asaas.simulationAllowed) {
     return { error: "Os pagamentos ainda não estão disponíveis. Tente novamente em breve." };
   }
@@ -35,32 +38,34 @@ export async function startCheckout(_: CheckoutState, form: FormData): Promise<C
       if (existing.status === "active" && existing.access_until && existing.access_until > new Date()) redirect("/conta");
       const pays = await asaas.listSubscriptionPayments(existing.asaas_subscription_id);
       const open = pays.find((p) => ["PENDING", "OVERDUE"].includes(p.status));
-      if (open?.invoiceUrl && existing.billing_type === method) {
+      const samePlan = existing.plan === plan.id;
+      if (open?.invoiceUrl && existing.billing_type === method && samePlan) {
         invoiceUrl = open.invoiceUrl;
       } else {
-        // Mudou a forma de pagamento: cancela a anterior e cria outra
+        // Mudou a forma de pagamento ou o plano: cancela a anterior e cria outra
         await asaas.cancelSubscription(existing.asaas_subscription_id);
       }
     }
 
-    // 3. Nova assinatura mensal com primeira cobranca para hoje
+    // 3. Nova assinatura (mensal ou anual) com primeira cobranca para hoje
     if (!invoiceUrl) {
       const sub = await asaas.createSubscription({
         customerId,
         billingType: method,
-        value: config.planPrice,
+        value: plan.price,
         nextDueDate: asaas.todayBR(),
-        description: config.planDescription,
+        description: `${config.appName} - assinatura ${plan.label.toLowerCase()}`,
         userId: user.id,
+        cycle: plan.cycle,
       });
       await query(
-        `insert into subscriptions (user_id, asaas_subscription_id, billing_type, status)
-         values ($1, $2, $3, 'pending')
+        `insert into subscriptions (user_id, asaas_subscription_id, billing_type, status, plan)
+         values ($1, $2, $3, 'pending', $4)
          on conflict (user_id) do update set asaas_subscription_id = excluded.asaas_subscription_id,
-           billing_type = excluded.billing_type,
+           billing_type = excluded.billing_type, plan = excluded.plan,
            status = case when subscriptions.access_until > now() then 'active' else 'pending' end,
            updated_at = now()`,
-        [user.id, sub.id, method],
+        [user.id, sub.id, method, plan.id],
       );
 
       if (asaas.isMock) {
@@ -68,7 +73,7 @@ export async function startCheckout(_: CheckoutState, form: FormData): Promise<C
         await query(
           `insert into payments (asaas_payment_id, user_id, status, billing_type, value, due_date, invoice_url)
            values ($1, $2, 'PENDING', $3, $4, $5, $6)`,
-          [id, user.id, method, config.planPrice, asaas.todayBR(), `/dev/fatura/${id}`],
+          [id, user.id, method, plan.price, asaas.todayBR(), `/dev/fatura/${id}`],
         );
       }
 

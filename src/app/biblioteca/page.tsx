@@ -9,6 +9,8 @@ import {
   booksInCategory, continueListening, coverUrl, featuredBooks, freeBooks, listBooks, listCategories, popularBooks, shelfBooks,
 } from "@/lib/catalog";
 import { config, formatBRL, formatDuration } from "@/lib/config";
+import { OfferBanner } from "@/components/OfferBanner";
+import { getAnnualOffer } from "@/lib/plans";
 
 export const metadata = { title: "Início" };
 
@@ -52,7 +54,10 @@ export default async function Biblioteca() {
         <CategoryChips categories={categories} />
       </div>
 
-      {!access && (
+      {!access && (await getAnnualOffer()).active && (
+        <div className="container-page mb-12"><OfferBanner href={user ? "/assinar" : "/cadastro"} /></div>
+      )}
+      {!access && !(await getAnnualOffer()).active && (
         <div className="container-page mb-12">
           <div className="glow relative overflow-hidden rounded-3xl border border-accent/20 p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Assinatura</p>

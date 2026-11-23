@@ -24,6 +24,7 @@ export default async function Admin() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-3xl font-semibold">Painel</h1>
         <div className="flex flex-wrap gap-2">
+          <Link href="/admin/planos" className="btn-ghost">Planos</Link>
           <Link href="/admin/categorias" className="btn-ghost">Categorias</Link>
           <Link href="/admin/aparencia" className="btn-ghost">Aparência</Link>
           <Link href="/admin/diagnostico" className="btn-ghost">Diagnóstico</Link>

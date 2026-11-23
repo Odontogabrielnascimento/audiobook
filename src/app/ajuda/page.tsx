@@ -7,7 +7,7 @@ export const metadata = { title: "Ajuda" };
 const price = formatBRL(config.planPrice);
 
 const FAQ: [string, React.ReactNode][] = [
-  ["Quanto custa?", <>A assinatura custa {price} por mês e dá acesso a todo o catálogo, sem limite de horas.</>],
+  ["Quanto custa?", <>O plano mensal custa {price} por mês. Durante a oferta de lançamento, por tempo limitado, há também o plano anual com desconto, mostrado na tela de assinatura. Os dois dão acesso a todo o catálogo, sem limite de horas.</>],
   ["Como pago?", <>Por Pix ou cartão de crédito. No cartão, a cobrança se repete sozinha todo mês. No Pix, você recebe a cobrança do mês por e-mail e paga pelo aplicativo do banco.</>],
   ["Quando o acesso é liberado?", <>Assim que o pagamento é confirmado. No Pix costuma levar poucos minutos; no cartão, é quase imediato.</>],
   ["Como cancelo?", <>Em <Link href="/conta">Minha conta</Link>, toque em “Cancelar assinatura”. Você continua ouvindo até o fim do período já pago e não há novas cobranças.</>],

@@ -29,9 +29,9 @@ export default function Termos() {
 
           <h2>3. Assinatura e pagamento</h2>
           <ul>
-            <li>A assinatura custa {formatBRL(config.planPrice)} por mês e dá acesso a todo o catálogo disponível durante o período pago.</li>
+            <li>O plano mensal custa {formatBRL(config.planPrice)} por mês. Quando houver oferta de plano anual, seu valor, desconto e prazo de validade serão informados na tela de assinatura antes da contratação. Os dois planos dão acesso a todo o catálogo disponível durante o período pago.</li>
             <li>O pagamento é feito por Pix ou cartão de crédito, processado pela Asaas Gestão Financeira Instituição de Pagamento S.A. Não armazenamos dados do seu cartão.</li>
-            <li>A assinatura se renova automaticamente a cada mês até ser cancelada. No cartão, a cobrança é automática; no Pix, enviamos a cobrança do mês por e-mail.</li>
+            <li>A assinatura se renova automaticamente ao fim de cada período (mês ou ano) até ser cancelada. No cartão, a cobrança é automática; no Pix, enviamos a cobrança do mês por e-mail.</li>
             <li>Se o pagamento não for confirmado em até {config.graceDays} dias após o vencimento, o acesso é suspenso até a regularização.</li>
             <li>Alterações de preço serão comunicadas com antecedência mínima de 30 dias e valerão a partir da renovação seguinte.</li>
           </ul>

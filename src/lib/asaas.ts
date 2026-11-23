@@ -67,6 +67,7 @@ export async function createSubscription(input: {
   nextDueDate: string;
   description: string;
   userId: string;
+  cycle?: "MONTHLY" | "YEARLY";
 }) {
   if (isMock) return { id: `mock_sub_${randomUUID().slice(0, 8)}` };
   return call<{ id: string }>("POST", "/subscriptions", {
@@ -74,7 +75,7 @@ export async function createSubscription(input: {
     billingType: input.billingType,
     value: input.value,
     nextDueDate: input.nextDueDate,
-    cycle: "MONTHLY",
+    cycle: input.cycle ?? "MONTHLY",
     description: input.description,
     externalReference: input.userId,
   });

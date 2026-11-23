@@ -159,3 +159,9 @@ alter table books add column if not exists access text not null default 'subscri
 do $$ begin
   alter table books add constraint books_access_check check (access in ('subscribers', 'sample', 'free'));
 exception when duplicate_object then null; end $$;
+
+-- ===== Planos =====
+alter table subscriptions add column if not exists plan text not null default 'monthly';
+do $$ begin
+  alter table subscriptions add constraint subscriptions_plan_check check (plan in ('monthly', 'yearly'));
+exception when duplicate_object then null; end $$;

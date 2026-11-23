@@ -231,3 +231,22 @@ export async function setHeroImage(key: string | null) {
   if (old && old !== key) await deleteFile(old);
   revalidatePath("/", "layout");
 }
+
+// ---- Planos ----
+
+export type OfferFormState = { error?: string; ok?: boolean } | undefined;
+
+export async function saveAnnualOffer(_: OfferFormState, form: FormData): Promise<OfferFormState> {
+  await requireAdmin();
+  const enabled = form.get("enabled") === "on";
+  const price = Number(String(form.get("price") || "").replace(",", "."));
+  const until = String(form.get("until") || "").trim();
+  if (!Number.isFinite(price) || price <= 0) return { error: "Informe um valor válido para o plano anual." };
+  if (until && !/^\d{4}-\d{2}-\d{2}$/.test(until)) return { error: "Data inválida." };
+  if (enabled && !until) return { error: "Para dizer que a oferta é por tempo limitado, defina a data de encerramento." };
+  await setSetting("annual_offer_enabled", enabled ? "1" : "0");
+  await setSetting("annual_price", price.toFixed(2));
+  await setSetting("annual_offer_until", until || null);
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
