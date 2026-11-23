@@ -53,7 +53,14 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       <div className="container-page pt-8">
         <div className="grid gap-8 md:grid-cols-[260px_1fr] md:items-end">
           <div className="mx-auto w-full max-w-[220px] md:max-w-none">
-            <Cover book={book} className="!rounded-xl shadow-2xl shadow-black/60" />
+            <div className="relative">
+              <Cover book={book} className="!rounded-xl shadow-2xl shadow-black/60" />
+              {book.access !== "subscribers" && (
+                <span className="absolute bottom-3 left-3 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-accent-ink shadow-lg">
+                  {book.access === "free" ? "Grátis" : "Amostra grátis"}
+                </span>
+              )}
+            </div>
           </div>
           <div>
             {!book.published && <p className="mb-2 text-sm font-semibold text-warn">Rascunho (visível só para administradores)</p>}
@@ -61,11 +68,6 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
               <Link href={`/serie/${book.series_slug}`} className="text-sm font-semibold text-accent hover:underline">
                 {book.series_name}{book.series_position ? ` · Volume ${book.series_position}` : ""}
               </Link>
-            )}
-            {book.access !== "subscribers" && (
-              <p className="mb-2 mt-2 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-accent-ink">
-                {book.access === "free" ? "Grátis" : "Amostra grátis"}
-              </p>
             )}
             <h1 className="mt-1 text-4xl font-semibold leading-[1.05] sm:text-5xl">{book.title}</h1>
             <p className="mt-2 text-lg text-ink/80">

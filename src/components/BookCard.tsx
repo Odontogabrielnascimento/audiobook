@@ -32,7 +32,7 @@ export function BookCard({ book, subtitle }: { book: Book; subtitle?: string }) 
       <div className="relative">
         <Cover book={book} className="transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl" />
         {book.access !== "subscribers" && (
-          <span className="absolute left-2 top-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-ink shadow">
+          <span className="absolute bottom-2 left-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-ink shadow">
             {book.access === "free" ? "Grátis" : "Amostra"}
           </span>
         )}
