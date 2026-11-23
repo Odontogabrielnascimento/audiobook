@@ -35,6 +35,9 @@ export default async function Assinar() {
           Pagamentos ainda não configurados.
         </p>
       )}
+      <p className="mt-3 text-sm">
+        <Link href="/biblioteca" className="text-muted underline hover:text-ink">Agora não, continuar com a conta gratuita →</Link>
+      </p>
       <div className="mt-6">
         <CheckoutForm
           defaultCpf={user.cpf ?? ""}

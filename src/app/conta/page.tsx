@@ -31,7 +31,7 @@ export default async function Conta() {
   // Assinatura cancelada nao oferece pagar cobranca pendente (o Asaas a remove ao cancelar)
   const pending = sub?.status === "canceled" ? undefined : payments.find((p) => p.status === "PENDING" || p.status === "OVERDUE");
 
-  let statusText = "Sem assinatura";
+  let statusText = "Conta gratuita: você ouve os livros liberados. Assine para ter o catálogo completo.";
   if (user.role === "admin") statusText = "Administrador (acesso completo)";
   else if (sub?.status === "canceled") statusText = accessOk ? `Cancelada · acesso até ${formatDate(sub.access_until!)}` : "Cancelada";
   else if (accessOk) statusText = `Ativa · acesso garantido até ${formatDate(sub!.access_until!)}`;

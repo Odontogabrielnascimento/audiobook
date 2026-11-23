@@ -40,11 +40,14 @@ export default async function Home() {
             Livros de fé, teologia e vida cristã narrados para ouvir no caminho, em casa ou antes de dormir.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/cadastro" className="btn-primary !px-7 !py-3.5 !text-base">Assinar por {formatBRL(config.planPrice)}/mês</Link>
-            <Link href="/biblioteca" className="btn-ghost !px-6 !py-3.5 !text-base">Ver o catálogo</Link>
+            <Link href="/cadastro?next=/assinar" className="btn-primary !px-7 !py-3.5 !text-base">Assinar a partir de {formatBRL(config.planPrice)}/mês</Link>
+            <Link href="/cadastro" className="btn-ghost !px-6 !py-3.5 !text-base">Criar conta grátis</Link>
           </div>
-          <p className="mt-4 text-sm text-muted">Pix ou cartão de crédito. Cancele quando quiser.</p>
-          <div className="mt-8 max-w-xl"><OfferBanner href="/cadastro" compact /></div>
+          <p className="mt-4 text-sm text-muted">
+            A conta é gratuita e já dá acesso aos livros liberados. Assine quando quiser, por Pix ou cartão.{" "}
+            <Link href="/biblioteca" className="underline hover:text-ink">Ver o catálogo</Link>
+          </p>
+          <div className="mt-8 max-w-xl"><OfferBanner href="/cadastro?next=/assinar" compact /></div>
 
         </div>
       </section>

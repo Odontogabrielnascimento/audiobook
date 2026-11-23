@@ -43,7 +43,8 @@ export async function signUp(_: FormState, form: FormData): Promise<FormState> {
     [name, email, hash],
   );
   await createSession(user.id);
-  redirect(safeNext(form.get("next")) === "/biblioteca" ? "/assinar" : safeNext(form.get("next")));
+  const next = safeNext(form.get("next"));
+  redirect(next === "/biblioteca" ? "/biblioteca?bemvindo=1" : next);
 }
 
 export async function signIn(_: FormState, form: FormData): Promise<FormState> {

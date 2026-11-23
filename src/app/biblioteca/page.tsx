@@ -10,6 +10,7 @@ import {
 } from "@/lib/catalog";
 import { config, formatBRL, formatDuration } from "@/lib/config";
 import { OfferBanner } from "@/components/OfferBanner";
+import { WelcomeNotice } from "@/components/WelcomeNotice";
 import { getAnnualOffer } from "@/lib/plans";
 
 export const metadata = { title: "Início" };
@@ -19,7 +20,8 @@ function greeting() {
   return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
 }
 
-export default async function Biblioteca() {
+export default async function Biblioteca({ searchParams }: { searchParams: Promise<{ bemvindo?: string }> }) {
+  const welcome = (await searchParams).bemvindo === "1";
   const user = await getCurrentUser();
   const [featured, recent, popular, categories, access, resume, wantList, free] = await Promise.all([
     featuredBooks(6),
@@ -35,6 +37,9 @@ export default async function Biblioteca() {
 
   return (
     <div>
+      {welcome && user && !access && (
+        <div className="container-page pt-4"><WelcomeNotice name={user.name} hasFreeBooks={free.length > 0} /></div>
+      )}
       <HeroCarousel
         items={featured.map((b) => ({
           slug: b.slug,
@@ -55,7 +60,7 @@ export default async function Biblioteca() {
       </div>
 
       {!access && (await getAnnualOffer()).active && (
-        <div className="container-page mb-12"><OfferBanner href={user ? "/assinar" : "/cadastro"} /></div>
+        <div className="container-page mb-12"><OfferBanner href={user ? "/assinar" : "/cadastro?next=/assinar"} /></div>
       )}
       {!access && !(await getAnnualOffer()).active && (
         <div className="container-page mb-12">
@@ -63,7 +68,7 @@ export default async function Biblioteca() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Assinatura</p>
             <p className="mt-2 max-w-lg font-serif text-2xl font-semibold sm:text-3xl">Todo o catálogo por {formatBRL(config.planPrice)} ao mês.</p>
             <p className="mt-2 text-sm text-muted">Pix ou cartão. Cancele quando quiser.</p>
-            <Link href={user ? "/assinar" : "/cadastro"} className="btn-primary mt-5 !px-6 !py-3">Assinar agora</Link>
+            <Link href={user ? "/assinar" : "/cadastro?next=/assinar"} className="btn-primary mt-5 !px-6 !py-3">Assinar agora</Link>
           </div>
         </div>
       )}
@@ -76,7 +81,7 @@ export default async function Biblioteca() {
         </Row>
       )}
       <Shelf title="Quero ouvir" eyebrow="Sua lista" href="/estante?aba=quero" books={wantList} />
-      {!access && <Shelf title="Ouça grátis" eyebrow="Para conhecer" books={free} />}
+      {!access && <div id="ouca-gratis" className="scroll-mt-20"><Shelf title="Ouça grátis" eyebrow="Para conhecer" books={free} /></div>}
       <Shelf title="Novidades" eyebrow="Acabaram de chegar" books={recent} />
       <Shelf title="Mais ouvidos" eyebrow="Em alta" books={popular} />
       {byCategory.map(({ c, books }) => (

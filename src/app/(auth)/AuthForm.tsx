@@ -47,7 +47,7 @@ export function AuthForm({ mode, next }: { mode: "entrar" | "cadastro"; next?: s
       )}
       {state?.error && <p className="text-sm text-danger" role="alert">{state.error}</p>}
       <button className="btn-primary w-full" disabled={pending}>
-        {pending ? "Aguarde..." : mode === "entrar" ? "Entrar" : "Criar conta"}
+        {pending ? "Aguarde..." : mode === "entrar" ? "Entrar" : "Criar conta grátis"}
       </button>
       <p className="text-center text-sm text-muted">
         {mode === "entrar" ? (
