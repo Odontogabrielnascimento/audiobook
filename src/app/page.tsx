@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BookCard } from "@/components/BookCard";
 import { getCurrentUser } from "@/lib/auth";
-import { coverUrl, listBooks } from "@/lib/catalog";
+import { listBooks } from "@/lib/catalog";
 import { config, formatBRL } from "@/lib/config";
 import { heroImageUrl } from "@/lib/settings";
 
@@ -17,18 +17,16 @@ export default async function Home() {
   const user = await getCurrentUser();
   if (user) redirect("/biblioteca");
   const [books, hero] = await Promise.all([listBooks({ limit: 12 }), heroImageUrl()]);
-  const fan = books.map(coverUrl).filter((u): u is string => !!u).slice(0, 3);
 
   return (
     <>
       <section className="relative -mt-16 overflow-hidden pt-16">
         <div className="absolute inset-0 glow" aria-hidden />
-        {hero && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={hero} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-        )}
+        {/* Banner enviado no Admin ou, sem ele, a arte padrao da marca */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={hero ?? "/brand/hero.svg"} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-40 md:opacity-100" />
         <div className="absolute inset-0 bg-gradient-to-b from-paper/40 via-paper/40 to-paper" aria-hidden />
-        <div className="absolute inset-0 bg-gradient-to-r from-paper/90 via-paper/40 to-transparent" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-r from-paper/95 via-paper/50 to-transparent md:via-paper/30" aria-hidden />
 
         <div className="container-page relative flex min-h-[78vh] flex-col justify-center py-20">
           <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
@@ -46,17 +44,6 @@ export default async function Home() {
           </div>
           <p className="mt-4 text-sm text-muted">Pix ou cartão de crédito. Cancele quando quiser.</p>
 
-          {/* Leque de capas (computador, quando nao ha banner) */}
-          {!hero && fan.length >= 2 && (
-            <div className="pointer-events-none absolute right-6 top-1/2 hidden h-[420px] w-[420px] -translate-y-1/2 lg:block" aria-hidden>
-              {fan.map((url, k) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={url} src={url} alt=""
-                  className="absolute left-1/2 top-1/2 aspect-[2/3] w-48 rounded-xl object-cover shadow-2xl shadow-black/70 ring-1 ring-white/10"
-                  style={{ transform: `translate(-50%, -50%) translateX(${(k - (fan.length - 1) / 2) * 90}px) rotate(${(k - (fan.length - 1) / 2) * 8}deg)`, zIndex: k === Math.floor(fan.length / 2) ? 10 : k }} />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
