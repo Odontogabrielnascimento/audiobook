@@ -118,8 +118,10 @@ export async function syncSubscriptionFromAsaas(userId: string) {
     for (const p of payments) {
       const event = ["RECEIVED", "CONFIRMED", "RECEIVED_IN_CASH"].includes(p.status)
         ? (p.status === "CONFIRMED" ? "PAYMENT_CONFIRMED" : "PAYMENT_RECEIVED")
-        : p.status === "OVERDUE" ? "PAYMENT_OVERDUE" : null;
-      if (event) await processAsaasEvent({ id: `sync_${p.id}_${p.status}`, event, payment: p });
+        : p.status === "OVERDUE" ? "PAYMENT_OVERDUE"
+        : p.status === "PENDING" ? "PAYMENT_CREATED" : null;
+      // PENDING so registra a cobranca (para o botao "Pagar cobranca em aberto")
+      if (event) await processAsaasEvent({ id: event === "PAYMENT_CREATED" ? undefined : `sync_${p.id}_${p.status}`, event, payment: p });
     }
   } catch (err) {
     console.error("Falha ao sincronizar assinatura com o Asaas", err);
