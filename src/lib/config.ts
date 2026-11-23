@@ -24,6 +24,11 @@ export function formatDuration(totalSeconds: number) {
   return `${m} min`;
 }
 
+// Datas sem horario (ex.: vencimento) vem do banco como meia-noite UTC: exibir em UTC evita mostrar o dia anterior
+export function formatDay(d: Date | string) {
+  return new Date(d).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+}
+
 export function formatDate(d: Date | string) {
   return new Date(d).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireUser, getSubscription } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { syncSubscriptionFromAsaas } from "@/lib/billing";
-import { formatBRL, formatDate } from "@/lib/config";
+import { formatBRL, formatDate, formatDay } from "@/lib/config";
 import { signOut } from "../(auth)/actions";
 import { cancelMySubscription } from "./actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -75,7 +75,7 @@ export default async function Conta() {
           <ul className="divide-y divide-line text-sm">
             {payments.map((p) => (
               <li key={p.asaas_payment_id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <span>{formatDate(p.due_date)} · {formatBRL(Number(p.value))}</span>
+                <span>{formatDay(p.due_date)} · {formatBRL(Number(p.value))}</span>
                 <span className="flex items-center gap-3">
                   <span className="text-muted">{PAY_STATUS[p.status] ?? p.status}</span>
                   {p.invoice_url && <a className="text-accent underline" href={p.invoice_url}>Fatura</a>}

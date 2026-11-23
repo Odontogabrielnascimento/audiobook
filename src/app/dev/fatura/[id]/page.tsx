@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { simulationAllowed } from "@/lib/asaas";
 import { processAsaasEvent } from "@/lib/billing";
-import { formatBRL, formatDate } from "@/lib/config";
+import { formatBRL, formatDay } from "@/lib/config";
 import { queryOne } from "@/lib/db";
 
 // Fatura ficticia usada apenas no MODO SIMULADO (sem ASAAS_API_KEY).
@@ -52,7 +52,7 @@ export default async function FakeInvoice({ params }: { params: Promise<{ id: st
       <p className="mb-4 rounded-xl border border-warn p-3 text-sm text-warn">Fatura simulada · modo de desenvolvimento</p>
       <div className="card space-y-2 p-6">
         <h1 className="text-2xl font-semibold">{formatBRL(Number(pay.value))}</h1>
-        <p className="text-sm text-muted">Vencimento {formatDate(pay.due_date)} · {pay.billing_type === "PIX" ? "Pix" : "Cartão"}</p>
+        <p className="text-sm text-muted">Vencimento {formatDay(pay.due_date)} · {pay.billing_type === "PIX" ? "Pix" : "Cartão"}</p>
         <p className="text-sm">Situação: {pay.status}</p>
         {!paid && (
           <form action={simulate} className="flex flex-wrap gap-3 pt-4">
