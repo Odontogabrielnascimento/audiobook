@@ -99,3 +99,29 @@ export async function processAsaasEvent(evt: AsaasEvent) {
     client.release();
   }
 }
+
+// Consulta o Asaas e aplica pagamentos ja confirmados que ainda nao chegaram por webhook
+// (webhook atrasado, falho ou nao configurado). Seguro chamar varias vezes.
+export async function syncSubscriptionFromAsaas(userId: string) {
+  const { isMock, listSubscriptionPayments } = await import("./asaas");
+  if (isMock) return;
+  const sub = await pool.query<{ asaas_subscription_id: string | null; status: string; access_until: Date | null }>(
+    "select asaas_subscription_id, status, access_until from subscriptions where user_id = $1",
+    [userId],
+  );
+  const s = sub.rows[0];
+  if (!s?.asaas_subscription_id) return;
+  // So consulta quando ha algo pendente (sem acesso valido)
+  if (s.access_until && s.access_until > new Date() && s.status === "active") return;
+  try {
+    const payments = await listSubscriptionPayments(s.asaas_subscription_id);
+    for (const p of payments) {
+      const event = ["RECEIVED", "CONFIRMED", "RECEIVED_IN_CASH"].includes(p.status)
+        ? (p.status === "CONFIRMED" ? "PAYMENT_CONFIRMED" : "PAYMENT_RECEIVED")
+        : p.status === "OVERDUE" ? "PAYMENT_OVERDUE" : null;
+      if (event) await processAsaasEvent({ id: `sync_${p.id}_${p.status}`, event, payment: p });
+    }
+  } catch (err) {
+    console.error("Falha ao sincronizar assinatura com o Asaas", err);
+  }
+}

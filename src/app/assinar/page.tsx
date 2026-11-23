@@ -3,11 +3,13 @@ import { requireUser, hasAccess } from "@/lib/auth";
 import { isMock, simulationAllowed } from "@/lib/asaas";
 import { config, formatBRL } from "@/lib/config";
 import { CheckoutForm } from "./CheckoutForm";
+import { syncSubscriptionFromAsaas } from "@/lib/billing";
 
 export const metadata = { title: "Assinar" };
 
 export default async function Assinar() {
   const user = await requireUser("/assinar");
+  await syncSubscriptionFromAsaas(user.id);
   if (await hasAccess(user)) {
     return (
       <div className="container-page max-w-md py-12">

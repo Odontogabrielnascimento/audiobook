@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser, getSubscription } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { syncSubscriptionFromAsaas } from "@/lib/billing";
 import { formatBRL, formatDate } from "@/lib/config";
 import { signOut } from "../(auth)/actions";
 import { cancelMySubscription } from "./actions";
@@ -20,6 +21,7 @@ const PAY_STATUS: Record<string, string> = {
 
 export default async function Conta() {
   const user = await requireUser("/conta");
+  await syncSubscriptionFromAsaas(user.id);
   const sub = await getSubscription(user.id);
   const payments = await query<{ asaas_payment_id: string; status: string; value: string; due_date: Date; invoice_url: string | null; billing_type: string | null }>(
     "select * from payments where user_id = $1 order by due_date desc limit 12",
