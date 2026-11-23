@@ -28,7 +28,8 @@ export default async function Conta() {
     [user.id],
   );
   const accessOk = !!sub?.access_until && sub.access_until > new Date();
-  const pending = payments.find((p) => p.status === "PENDING" || p.status === "OVERDUE");
+  // Assinatura cancelada nao oferece pagar cobranca pendente (o Asaas a remove ao cancelar)
+  const pending = sub?.status === "canceled" ? undefined : payments.find((p) => p.status === "PENDING" || p.status === "OVERDUE");
 
   let statusText = "Sem assinatura";
   if (user.role === "admin") statusText = "Administrador (acesso completo)";
