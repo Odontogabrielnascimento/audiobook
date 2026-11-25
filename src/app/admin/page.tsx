@@ -4,12 +4,13 @@ import { requireAdmin } from "@/lib/auth";
 import { listBooks } from "@/lib/catalog";
 import { formatBRL, formatDuration } from "@/lib/config";
 import { queryOne } from "@/lib/db";
+import { storageUsage } from "@/lib/storage";
 
 export const metadata = { title: "Admin" };
 
 export default async function Admin() {
   await requireAdmin();
-  const [books, stats] = await Promise.all([
+  const [books, stats, usage] = await Promise.all([
     listBooks({ includeUnpublished: true }),
     queryOne<{ users: number; active: number; revenue: string }>(
       `select (select count(*) from users where role = 'user')::int as users,
@@ -17,6 +18,7 @@ export default async function Admin() {
               (select coalesce(sum(value), 0) from payments
                 where status in ('RECEIVED', 'CONFIRMED') and due_date >= date_trunc('month', now())) as revenue`,
     ),
+    storageUsage(),
   ]);
 
   return (
@@ -45,6 +47,8 @@ export default async function Admin() {
         ))}
       </div>
 
+      <StorageCard usage={usage} />
+
       {books.length === 0 ? (
         <p className="text-muted">Nenhum livro cadastrado. Comece por “Novo livro”.</p>
       ) : (
@@ -65,6 +69,42 @@ export default async function Admin() {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+// Limite de armazenamento a comparar (Supabase gratuito: 1 GB). Ajuste com STORAGE_LIMIT_GB.
+const LIMIT_GB = Number(process.env.STORAGE_LIMIT_GB || "1");
+
+function fmtSize(bytes: number) {
+  const gb = bytes / 1024 ** 3;
+  if (gb >= 1) return `${gb.toFixed(2).replace(".", ",")} GB`;
+  return `${Math.round(bytes / 1024 ** 2)} MB`;
+}
+
+function StorageCard({ usage }: { usage: { bytes: number; files: number; audioBytes: number } | null }) {
+  if (!usage) {
+    return <p className="card mb-8 p-4 text-sm text-muted">Não foi possível medir o armazenamento agora.</p>;
+  }
+  const limit = LIMIT_GB * 1024 ** 3;
+  const pct = Math.min(100, Math.round((usage.bytes / limit) * 100));
+  const color = pct >= 90 ? "bg-danger" : pct >= 70 ? "bg-warn" : "bg-accent";
+  return (
+    <div className="card mb-8 p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-xs text-muted">Armazenamento usado</p>
+        <p className="text-sm tabular-nums">
+          <span className="text-lg font-semibold">{fmtSize(usage.bytes)}</span>
+          <span className="text-muted"> de {LIMIT_GB.toString().replace(".", ",")} GB ({pct}%)</span>
+        </p>
+      </div>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-2 text-xs text-muted">
+        {usage.files} arquivos · áudios: {fmtSize(usage.audioBytes)}
+        {pct >= 90 ? " · Perto do limite: novos envios podem falhar." : pct >= 70 ? " · Atenção: mais de 70% usado." : ""}
+      </p>
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import "server-only";
 import { createReadStream, createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
-import { mkdir, stat, unlink } from "node:fs/promises";
+import { mkdir, readdir, stat, unlink } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Armazenamento de arquivos com dois modos:
@@ -159,4 +159,37 @@ export async function checkStorage() {
 function errText(e: unknown) {
   const err = e as { name?: string; message?: string; $metadata?: { httpStatusCode?: number } };
   return `${err.$metadata?.httpStatusCode ?? ""} ${err.name ?? ""}: ${err.message ?? String(e)}`.trim();
+}
+
+// Espaco ocupado no armazenamento (audios + capas + banner), em bytes
+export async function storageUsage(): Promise<{ bytes: number; files: number; audioBytes: number } | null> {
+  try {
+    let bytes = 0, files = 0, audioBytes = 0;
+    if (driver === "s3") {
+      let token: string | undefined;
+      do {
+        const res = await s3Client().send(new ListObjectsV2Command({ Bucket: bucket(), ContinuationToken: token }));
+        for (const o of res.Contents ?? []) {
+          bytes += o.Size ?? 0;
+          files++;
+          if (o.Key?.startsWith("audio/")) audioBytes += o.Size ?? 0;
+        }
+        token = res.IsTruncated ? res.NextContinuationToken : undefined;
+      } while (token);
+    } else {
+      for (const dir of ["audio", "covers"]) {
+        const names = await readdir(path.join(LOCAL_ROOT, dir)).catch(() => [] as string[]);
+        for (const n of names) {
+          const st = await stat(path.join(LOCAL_ROOT, dir, n));
+          bytes += st.size;
+          files++;
+          if (dir === "audio") audioBytes += st.size;
+        }
+      }
+    }
+    return { bytes, files, audioBytes };
+  } catch (err) {
+    console.error("Falha ao medir o armazenamento", err);
+    return null;
+  }
 }
