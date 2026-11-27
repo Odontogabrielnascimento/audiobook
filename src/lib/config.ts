@@ -10,6 +10,8 @@ export const config = {
   // Dados da empresa (comprovante de CNPJ de 27/11/2026); as variaveis de ambiente podem substitui-los
   legalName: process.env.NEXT_PUBLIC_LEGAL_NAME || "A1 Publications e Papelaria Ltda",
   legalId: process.env.NEXT_PUBLIC_LEGAL_ID || "70.338.137/0001-36",
+  tradeName: process.env.NEXT_PUBLIC_TRADE_NAME || "A1 Publications",
+  // Endereco da sede: guardado aqui, mas NAO exibido no site por decisao do responsavel
   legalAddress:
     process.env.NEXT_PUBLIC_LEGAL_ADDRESS ||
     "Rua Nicola Ricciardi, 67, Irmãos Ricciardi, Guaxupé/MG, CEP 37837-502",

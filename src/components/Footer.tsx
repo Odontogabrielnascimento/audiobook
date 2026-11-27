@@ -8,9 +8,7 @@ export function Footer() {
         <div className="space-y-1">
           <p>© {new Date().getFullYear()} {config.appName}</p>
           <p className="text-xs">
-            {config.legalName} · CNPJ {config.legalId}
-            <br />
-            {config.legalAddress}
+            {config.tradeName} · CNPJ {config.legalId}
             {config.supportEmail && <> · <a href={`mailto:${config.supportEmail}`} className="hover:text-ink">{config.supportEmail}</a></>}
           </p>
         </div>
