@@ -7,8 +7,12 @@ export const config = {
   graceDays: Number(process.env.GRACE_DAYS || "3"),
   // Dados exibidos em Ajuda, Termos e Privacidade
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
-  legalName: process.env.NEXT_PUBLIC_LEGAL_NAME || "",
-  legalId: process.env.NEXT_PUBLIC_LEGAL_ID || "",
+  // Dados da empresa (comprovante de CNPJ de 27/11/2026); as variaveis de ambiente podem substitui-los
+  legalName: process.env.NEXT_PUBLIC_LEGAL_NAME || "A1 Publications e Papelaria Ltda",
+  legalId: process.env.NEXT_PUBLIC_LEGAL_ID || "70.338.137/0001-36",
+  legalAddress:
+    process.env.NEXT_PUBLIC_LEGAL_ADDRESS ||
+    "Rua Nicola Ricciardi, 67, Irmãos Ricciardi, Guaxupé/MG, CEP 37837-502",
 };
 
 export function formatBRL(value: number) {

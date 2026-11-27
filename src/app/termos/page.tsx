@@ -16,7 +16,7 @@ export default function Termos() {
           <h2>1. Quem somos</h2>
           <p>
             O {config.appName} é um serviço de audiolivros por assinatura oferecido por {empresa}, inscrita no CNPJ sob o nº{" "}
-            <Fill value={config.legalId} label="CNPJ" />, com sede em <Fill value="" label="endereço" />. Ao criar uma conta, você
+            <Fill value={config.legalId} label="CNPJ" />, com sede em <Fill value={config.legalAddress} label="endereço" />. Ao criar uma conta, você
             concorda com estes Termos e com a <Link href="/privacidade">Política de privacidade</Link>.
           </p>
 

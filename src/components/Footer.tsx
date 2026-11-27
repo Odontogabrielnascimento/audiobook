@@ -5,7 +5,15 @@ export function Footer() {
   return (
     <footer className="border-t border-line pb-44 pt-8 md:pb-28">
       <div className="container-page flex flex-col gap-4 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-        <p>© {new Date().getFullYear()} {config.legalName || config.appName}</p>
+        <div className="space-y-1">
+          <p>© {new Date().getFullYear()} {config.appName}</p>
+          <p className="text-xs">
+            {config.legalName} · CNPJ {config.legalId}
+            <br />
+            {config.legalAddress}
+            {config.supportEmail && <> · <a href={`mailto:${config.supportEmail}`} className="hover:text-ink">{config.supportEmail}</a></>}
+          </p>
+        </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
           <Link href="/ajuda" className="hover:text-ink">Ajuda</Link>
           <Link href="/termos" className="hover:text-ink">Termos de uso</Link>
